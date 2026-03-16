@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de commande - ShopLine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f5f5f5; margin:0; }
+        .container { max-width: 800px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); text-align:center; }
+        h1 { color: #2563eb; margin-bottom: 20px; }
+        p { font-size: 16px; color: #374151; margin: 10px 0; }
+        .order-info { margin: 20px 0; padding: 15px; background-color: #f3f4f6; border-radius: 8px; }
+        .order-info span { font-weight: 600; color: #111827; }
+        a.btn { display: inline-block; margin-top: 20px; padding: 12px 25px; background-color: #2563eb; color: #fff; border-radius: 8px; text-decoration: none; font-size: 14px; }
+        a.btn:hover { background-color: #1e40af; }
+        .fas.fa-check { font-size: 50px; color: #27ae60; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <i class="fas fa-check"></i>
+    <h1>Merci pour votre commande !</h1>
+    <p>Votre commande a été passée avec succès.</p>
+
+    <div class="order-info">
+        <p>Numéro de commande : <span id="order-id">---</span></p>
+        <p>Total : <span id="order-total">---</span></p>
+    </div>
+
+    <p>Un email de confirmation a été envoyé à votre adresse email.</p>
+
+    <a href="/produits" class="btn">Continuer vos achats</a>
+</div>
+
+<script>
+    // Récupérer l'ID et le total depuis l'URL et localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('id');
+    document.getElementById('order-id').textContent = orderId || '---';
+
+    const total = localStorage.getItem('lastOrderTotal') || '---';
+    document.getElementById('order-total').textContent = total + (total !== '---' ? ' €' : '');
+    // On peut supprimer le total pour éviter qu'il reste dans localStorage
+    localStorage.removeItem('lastOrderTotal');
+</script>
+</body>
+</html>

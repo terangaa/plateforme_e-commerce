@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Panier - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <span>Livraison gratuite à partir de 50€ | Service client: +33 1 23 45 67 89</span>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <a href="/" class="logo">Shop<span>Line</span></a>
+
+                    <div class="search-box">
+                        <input type="text" placeholder="Rechercher un produit...">
+                        <button type="button"><i class="fas fa-search"></i></button>
+                    </div>
+
+                    <div class="header-actions">
+                        <a href="#" class="action-link">
+                            <i class="fas fa-user"></i>
+                            <span>Compte</span>
+                        </a>
+                        <a href="/panier" class="action-link cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Panier</span>
+                            <span class="cart-badge" id="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="nav">
+            <div class="container">
+                <ul class="nav-list">
+                    <li><a href="/" class="nav-link">Accueil</a></li>
+                    <li><a href="/produits" class="nav-link">Produits</a></li>
+                    <li><a href="/produits?categorie=1" class="nav-link">Catégories</a></li>
+                    <li><a href="/produits?nouveau=true" class="nav-link">Nouveautés</a></li>
+                    <li><a href="/contact" class="nav-link">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <ul class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                <li class="breadcrumb-separator">/</li>
+                <li class="breadcrumb-item">Panier</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Cart Page -->
+    <section class="cart-page">
+        <div class="container">
+            <h1 style="margin-bottom: 30px;">Mon Panier</h1>
+
+            <div class="cart-grid">
+                <!-- Cart Items -->
+                <div class="cart-items">
+                    <div class="cart-header">
+                        <span>Produit</span>
+                        <span>Prix</span>
+                        <span>Quantité</span>
+                        <span>Total</span>
+                        <span></span>
+                    </div>
+                    <div id="cart-items">
+                        <!-- Cart items will be loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="cart-summary">
+                    <h3>Récapitulatif</h3>
+
+                    <div class="summary-row">
+                        <span>Sous-total</span>
+                        <span id="cart-subtotal">0.00 €</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Livraison</span>
+                        <span>Gratuite</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>TVA (20%)</span>
+                        <span id="cart-tax">0.00 €</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span id="cart-total">0.00 €</span>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="proceedToCheckout()">Passer la commande</button>
+                    <a href="/produits" class="continue-shopping">Continuer vos achats</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checkout Form (Hidden by default) -->
+    <section class="cart-page" id="checkout-section" style="display: none;">
+        <div class="container">
+            <h1 style="margin-bottom: 30px;">Informations de commande</h1>
+
+            <div class="cart-grid">
+                <!-- Client Form -->
+                <div class="cart-items">
+                    <h3 style="margin-bottom: 20px;">Vos informations</h3>
+                    <form id="order-form">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Nom complet *</label>
+                                <input type="text" id="nom" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email *</label>
+                                <input type="email" id="email" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px;">
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Téléphone *</label>
+                            <input type="tel" id="telephone" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px;">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Adresse *</label>
+                            <input type="text" id="adresse" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Ville *</label>
+                                <input type="text" id="ville" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Code postal *</label>
+                                <input type="text" id="codePostal" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="cart-summary">
+                    <h3>Résumé de la commande</h3>
+
+                    <div id="checkout-items">
+                        <!-- Items will be loaded dynamically -->
+                    </div>
+
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span id="checkout-total">0.00 €</span>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="submitOrder()">Confirmer la commande</button>
+                    <a href="#" class="continue-shopping" onclick="hideCheckout()">Retour au panier</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>ShopLine</h3>
+                    <p style="color: rgba(255,255,255,0.7);">Votre plateforme e-commerce de confiance.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liens Rapides</h3>
+                    <ul>
+                        <li><a href="/produits">Produits</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Service Client</h3>
+                    <ul>
+                        <li><a href="/faq">FAQ</a></li>
+                        <li><a href="/livraison">Livraison</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contactez-nous</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contact@shopline.fr</li>
+                        <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ShopLine. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script th:src="@{/js/app.js}"></script>
+    <script>
+        // Update totals - load from session
+        async function updateCheckoutTotals() {
+            const cartData = await getCartFromSession();
+            const subtotal = cartData?.total || 0;
+            const tax = subtotal * 0.2;
+            const total = subtotal;
+
+            document.getElementById('cart-tax').textContent = formatPrice(tax);
+            document.getElementById('checkout-total').textContent = formatPrice(total);
+        }
+
+        // Render checkout items
+        async function renderCheckoutItems() {
+            const container = document.getElementById('checkout-items');
+            if (!container) return;
+
+            const cartData = await getCartFromSession();
+            const items = cartData?.items || [];
+
+            container.innerHTML = items.map(item => `
+                <div class="summary-row">
+                    <span>${item.nom} x${item.quantite}</span>
+                    <span>${formatPrice(item.prix * item.quantite)}</span>
+                </div>
+            `).join('') || '<p>Votre panier est vide</p>';
+        }
+
+        async function proceedToCheckout() {
+            const cartData = await getCartFromSession();
+            const items = cartData?.items || [];
+
+            if (items.length === 0) {
+                showNotification('Votre panier est vide', 'error');
+                return;
+            }
+            document.getElementById('checkout-section').style.display = 'block';
+            document.querySelector('.cart-grid').style.display = 'none';
+            await renderCheckoutItems();
+            await updateCheckoutTotals();
+            window.scrollTo(0, 0);
+        }
+
+        function hideCheckout() {
+            document.getElementById('checkout-section').style.display = 'none';
+            document.querySelector('.cart-grid').style.display = 'grid';
+            event.preventDefault();
+        }
+
+        function submitOrder() {
+            const orderForm = document.getElementById('order-form');
+            if (!validateOrderForm()) {
+                showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+                return;
+            }
+
+            const clientData = {
+                nom: document.getElementById('nom').value,
+                email: document.getElementById('email').value,
+                telephone: document.getElementById('telephone').value,
+                adresse: document.getElementById('adresse').value,
+                ville: document.getElementById('ville').value,
+                codePostal: document.getElementById('codePostal').value
+            };
+
+            placeOrder(clientData);
+        }
+
+        // Load cart on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCartFromSession().then(() => {
+                renderCartItems();
+                updateCheckoutTotals();
+            });
+        });
+    </script>
+</body>
+</html>

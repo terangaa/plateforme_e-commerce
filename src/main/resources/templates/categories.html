@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catégories - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family:'Arial',sans-serif; margin:0; background:#f5f5f5; }
+        nav {
+            background:#ff6a00; display:flex; justify-content: space-between; align-items:center; padding:15px 50px; box-shadow:0 2px 10px rgba(0,0,0,0.1); flex-wrap:wrap;
+        }
+        nav .logo { color:#fff; font-size:24px; font-weight:bold; text-decoration:none; }
+        nav ul { list-style:none; display:flex; margin:0; padding:0; gap:25px; }
+        nav ul li a { color:#fff; text-decoration:none; font-weight:bold; transition:color 0.3s; }
+        nav ul li a:hover { color:#333; }
+
+        .container { max-width:1200px; margin:auto; padding:30px 20px; }
+        h2.section-title { text-align:center; color:#ff6a00; margin-bottom:20px; font-size:28px; }
+
+        /* Barre de recherche */
+        .search-bar { text-align:center; margin-bottom:20px; }
+        .search-bar input {
+            width:250px; padding:10px 15px; border-radius:25px; border:1px solid #ff6a00;
+            outline:none; font-size:16px; transition: all 0.3s;
+        }
+        .search-bar input:focus { box-shadow:0 0 10px rgba(255,106,0,0.5); }
+
+        /* Filtres */
+        .filter-buttons { text-align:center; margin-bottom:30px; }
+        .filter-buttons button {
+            background:#fff; border:1px solid #ff6a00; color:#ff6a00; padding:10px 20px; margin:5px;
+            border-radius:25px; cursor:pointer; transition: all 0.3s;
+        }
+        .filter-buttons button.active,
+        .filter-buttons button:hover { background:#ff6a00; color:#fff; }
+
+        /* Grid catégories */
+        .categories-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:25px; }
+        .category-card { background:#fff; border-radius:15px; overflow:hidden; text-align:center; transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s; cursor:pointer; opacity:1; }
+        .category-card.hide { opacity:0; transform: scale(0.95); pointer-events:none; }
+        .category-card:hover { transform: translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.2); }
+        .category-image { width:100%; height:180px; object-fit:cover; transition: transform 0.3s; }
+        .category-card:hover .category-image { transform: scale(1.05); }
+        .category-content { padding:20px; }
+        .category-title { font-size:20px; font-weight:bold; margin-bottom:10px; color:#333; }
+        .category-count { font-size:14px; color:#777; }
+
+        footer { background:#333; color:#fff; text-align:center; padding:30px 20px; margin-top:50px; }
+        footer a { color:#ff6a00; text-decoration:none; }
+        footer .social-icons { margin-top:10px; }
+        footer .social-icons a { margin:0 10px; color:#fff; font-size:18px; transition: color 0.3s; }
+        footer .social-icons a:hover { color:#ff6a00; }
+
+        @media (max-width:768px) {
+            nav { padding:15px 20px; flex-direction:column; align-items:flex-start; }
+            nav ul { flex-direction:column; gap:10px; margin-top:10px; }
+            .categories-grid { grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); }
+            .search-bar input { width:100%; max-width:300px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+    <a href="/" class="logo">ShopLine</a>
+    <ul>
+        <li><a href="/">Accueil</a></li>
+        <li><a href="/produits">Produits</a></li>
+        <li><a href="/categories">Catégories</a></li>
+        <li><a href="/contact">Contact</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+    <h2 class="section-title">Nos Catégories</h2>
+
+    <!-- Barre de recherche -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Rechercher une catégorie...">
+    </div>
+
+    <!-- Filtres -->
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">Toutes</button>
+        <button class="filter-btn" data-filter="Valise IVS">Valise IVS</button>
+        <button class="filter-btn" data-filter="Valise Original">Valise Original</button>
+        <button class="filter-btn" data-filter="Valise petit modèle">Valise petit modèle</button>
+        <button class="filter-btn" data-filter="Valise grand modèle">Valise grand modèle</button>
+    </div>
+
+    <div class="categories-grid">
+        <div th:each="cat : ${categories}" class="category-card" th:data-category="${cat.name}">
+            <a th:href="@{/categories/{id}/produits(id=${cat.id})}" class="category-link">
+                <img th:src="${cat.imageUrl != null ? cat.imageUrl : '/images/default-category.jpg'}" alt="Image catégorie" class="category-image">
+                <div class="category-content">
+                    <div class="category-title" th:text="${cat.name}">Nom catégorie</div>
+                    <div class="category-count" th:text="${#lists.size(cat.produits)} + ' produits'">0 produits</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 ShopLine. Tous droits réservés.</p>
+    <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+</footer>
+
+<!-- JS filtrage + recherche -->
+<script>
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const categoryCards = document.querySelectorAll('.category-card');
+    const searchInput = document.getElementById('searchInput');
+
+    let activeFilter = 'all';
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeFilter = btn.getAttribute('data-filter');
+            filterCards();
+        });
+    });
+
+    searchInput.addEventListener('input', () => {
+        filterCards();
+    });
+
+    function filterCards() {
+        const searchText = searchInput.value.toLowerCase();
+        categoryCards.forEach(card => {
+            const categoryName = card.getAttribute('data-category').toLowerCase();
+            const matchesFilter = activeFilter === 'all' || card.getAttribute('data-category') === activeFilter;
+            const matchesSearch = categoryName.includes(searchText);
+
+            if(matchesFilter && matchesSearch) {
+                card.classList.remove('hide');
+            } else {
+                card.classList.add('hide');
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

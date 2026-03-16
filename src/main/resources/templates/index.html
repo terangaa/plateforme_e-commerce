@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopLine - Votre Plateforme E-Commerce</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <span>Livraison gratuite à partir de 50€ | Service client: +33 1 23 45 67 89</span>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <a href="/" class="logo">Shop<span>Line</span></a>
+                    
+                    <div class="search-box">
+                        <input type="text" placeholder="Rechercher un produit...">
+                        <button type="button"><i class="fas fa-search"></i></button>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <a href="#" class="action-link">
+                            <i class="fas fa-user"></i>
+                            <span>Compte</span>
+                        </a>
+                        <a href="/panier" class="action-link cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Panier</span>
+                            <span class="cart-badge" id="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="nav">
+            <div class="container">
+                <ul class="nav-list">
+                    <li><a href="/" class="nav-link">Accueil</a></li>
+                    <li><a href="/produits" class="nav-link">Produits</a></li>
+                    <li><a href="/produits?categorie=1" class="nav-link">Catégories</a></li>
+                    <li><a href="/produits?nouveau=true" class="nav-link">Nouveautés</a></li>
+                    <li><a href="/contact" class="nav-link">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Bienvenue sur ShopLine</h1>
+                <p>Découvrez notre large gamme de produits de qualité à des prix exceptionnels. Shopping facile, rapide et sécurisé.</p>
+                <a href="/produits" class="btn btn-primary">Découvrir nos produits</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nos Catégories</h2>
+                <p>Parcourez nos différentes catégories de produits</p>
+            </div>
+            <div class="categories-grid" id="categories-grid">
+                <div class="category-card" onclick="filterProducts(1)">
+                    <i class="fas fa-laptop"></i>
+                    <h3>Informatique</h3>
+                    <p>Ordinateurs et accessoires</p>
+                </div>
+                <div class="category-card" onclick="filterProducts(2)">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Téléphonie</h3>
+                    <p>Smartphones et tablettes</p>
+                </div>
+                <div class="category-card" onclick="filterProducts(3)">
+                    <i class="fas fa-headphones"></i>
+                    <h3>Audio</h3>
+                    <p>Casques et écouteurs</p>
+                </div>
+                <div class="category-card" onclick="filterProducts(4)">
+                    <i class="fas fa-camera"></i>
+                    <h3>Photo & Vidéo</h3>
+                    <p>Appareils photo et caméras</p>
+                </div>
+                <div class="category-card" onclick="filterProducts(5)">
+                    <i class="fas fa-gamepad"></i>
+                    <h3>Gaming</h3>
+                    <p>Consoles et jeux vidéo</p>
+                </div>
+                <div class="category-card" onclick="filterProducts(6)">
+                    <i class="fas fa-clock"></i>
+                    <h3>Montres</h3>
+                    <p>Montres connectées</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="products">
+        <div class="container">
+            <div class="section-title">
+                <h2>Produits Vedettes</h2>
+                <p>Découvrez notre sélection de produits populaires</p>
+            </div>
+            <div class="products-grid" id="products-grid">
+                <!-- Products will be loaded dynamically -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <i class="fas fa-box" style="font-size: 5rem; color: #ccc;"></i>
+                        <div class="product-actions">
+                            <button class="product-action-btn" title="Voir">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="product-action-btn" title="Ajouter au panier">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Chargement...</span>
+                        <h3 class="product-title">Veuillez patienter</h3>
+                        <div class="product-price">
+                            <span class="current-price">---</span>
+                        </div>
+                        <div class="product-rating">
+                            <span class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
+                            <span class="rating-count">(0 avis)</span>
+                        </div>
+                        <button class="add-to-cart-btn">Ajouter au panier</button>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="/produits" class="btn btn-secondary">Voir tous les produits</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section style="background: #f8f9fa; padding: 60px 0;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-truck" style="font-size: 3rem; color: #3498db; margin-bottom: 15px;"></i>
+                    <h3 style="margin-bottom: 10px;">Livraison Gratuite</h3>
+                    <p style="color: #7f8c8d;">Livraison gratuite pour toute commande supérieure à 50€</p>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-shield-alt" style="font-size: 3rem; color: #3498db; margin-bottom: 15px;"></i>
+                    <h3 style="margin-bottom: 10px;">Paiement Sécurisé</h3>
+                    <p style="color: #7f8c8d;">Vos paiements sont 100% sécurisés</p>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-undo" style="font-size: 3rem; color: #3498db; margin-bottom: 15px;"></i>
+                    <h3 style="margin-bottom: 10px;">Retours Faciles</h3>
+                    <p style="color: #7f8c8d;">30 jours pour retourner vos produits</p>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-headset" style="font-size: 3rem; color: #3498db; margin-bottom: 15px;"></i>
+                    <h3 style="margin-bottom: 10px;">Support 24/7</h3>
+                    <p style="color: #7f8c8d;">Notre équipe est disponible à tout moment</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>ShopLine</h3>
+                    <p style="color: rgba(255,255,255,0.7);">Votre plateforme e-commerce de confiance pour tous vos achats en ligne.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liens Rapides</h3>
+                    <ul>
+                        <li><a href="/produits">Produits</a></li>
+                        <li><a href="/produits?nouveau=true">Nouveautés</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/a propos">À propos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Service Client</h3>
+                    <ul>
+                        <li><a href="/faq">FAQ</a></li>
+                        <li><a href="/livraison">Livraison</a></li>
+                        <li><a href="/retours">Retours</a></li>
+                        <li><a href="/conditions">CGV</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contactez-nous</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contact@shopline.fr</li>
+                        <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Paris, France</li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ShopLine. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script th:src="@{/js/app.js}"></script>
+    <script>
+        // Load products on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            loadCategories();
+            updateCartUI();
+        });
+    </script>
+</body>
+</html>

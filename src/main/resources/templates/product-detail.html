@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détail du Produit - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <span>Livraison gratuite à partir de 50€ | Service client: +33 1 23 45 67 89</span>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <a href="/" class="logo">Shop<span>Line</span></a>
+                    
+                    <div class="search-box">
+                        <input type="text" placeholder="Rechercher un produit...">
+                        <button type="button"><i class="fas fa-search"></i></button>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <a href="#" class="action-link">
+                            <i class="fas fa-user"></i>
+                            <span>Compte</span>
+                        </a>
+                        <a href="/panier" class="action-link cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Panier</span>
+                            <span class="cart-badge" id="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="nav">
+            <div class="container">
+                <ul class="nav-list">
+                    <li><a href="/" class="nav-link">Accueil</a></li>
+                    <li><a href="/produits" class="nav-link">Produits</a></li>
+                    <li><a href="/produits?categorie=1" class="nav-link">Catégories</a></li>
+                    <li><a href="/produits?nouveau=true" class="nav-link">Nouveautés</a></li>
+                    <li><a href="/contact" class="nav-link">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <ul class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                <li class="breadcrumb-separator">/</li>
+                <li class="breadcrumb-item"><a href="/produits">Produits</a></li>
+                <li class="breadcrumb-separator">/</li>
+                <li class="breadcrumb-item" id="breadcrumb-product">Détail</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Product Detail -->
+    <section class="product-detail" id="product-detail">
+        <div class="container">
+            <div class="product-detail-grid">
+                <!-- Product Images -->
+                <div class="product-gallery">
+                    <div class="main-image">
+                        <i class="fas fa-box" style="font-size: 10rem; color: #ccc;"></i>
+                    </div>
+                    <div class="thumbnail-list">
+                        <div class="thumbnail active">
+                            <i class="fas fa-box" style="font-size: 2rem; color: #ccc;"></i>
+                        </div>
+                        <div class="thumbnail">
+                            <i class="fas fa-box" style="font-size: 2rem; color: #ccc;"></i>
+                        </div>
+                        <div class="thumbnail">
+                            <i class="fas fa-box" style="font-size: 2rem; color: #ccc;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-detail-info">
+                    <span class="product-category" id="product-category">Catégorie</span>
+                    <h1 id="product-name">Chargement...</h1>
+                    
+                    <div class="product-meta">
+                        <span><i class="fas fa-star" style="color: #f39c12;"></i> <span id="product-rating">4.5</span>/5</span>
+                        <span><i class="fas fa-box"></i> <span id="product-stock">En stock</span></span>
+                        <span><i class="fas fa-eye"></i> <span id="product-views">0</span> vues</span>
+                    </div>
+
+                    <div class="detail-price">
+                        <span class="current-price" id="product-price">---</span>
+                    </div>
+
+                    <p class="product-description" id="product-description">
+                        Veuillez patienter pendant le chargement des informations du produit...
+                    </p>
+
+                    <div class="quantity-selector">
+                        <span class="quantity-label">Quantité:</span>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="decrementQuantity()">-</button>
+                            <input type="number" class="quantity-value" id="quantity" value="1" min="1">
+                            <button class="quantity-btn" onclick="incrementQuantity()">+</button>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="add-to-cart-btn">Ajouter au panier</button>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-heart"></i> Wishlist
+                        </button>
+                    </div>
+
+                    <div class="product-features">
+                        <div class="feature-item">
+                            <i class="fas fa-truck"></i>
+                            <span>Livraison gratuite à partir de 50€</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Garantie 2 ans</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-undo"></i>
+                            <span>Retours sous 30 jours</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-headset"></i>
+                            <span>Support client 24/7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products -->
+    <section class="products" style="padding-top: 0;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Produits Similaires</h2>
+                <p>Vous aimerez aussi ces produits</p>
+            </div>
+            <div class="products-grid" id="related-products">
+                <!-- Related products will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>ShopLine</h3>
+                    <p style="color: rgba(255,255,255,0.7);">Votre plateforme e-commerce de confiance pour tous vos achats en ligne.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liens Rapides</h3>
+                    <ul>
+                        <li><a href="/produits">Produits</a></li>
+                        <li><a href="/produits?nouveau=true">Nouveautés</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/a propos">À propos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Service Client</h3>
+                    <ul>
+                        <li><a href="/faq">FAQ</a></li>
+                        <li><a href="/livraison">Livraison</a></li>
+                        <li><a href="/retours">Retours</a></li>
+                        <li><a href="/conditions">CGV</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contactez-nous</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contact@shopline.fr</li>
+                        <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Paris, France</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ShopLine. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script th:src="@{/js/app.js}"></script>
+    <script>
+        // Get product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        function incrementQuantity() {
+            const input = document.getElementById('quantity');
+            input.value = parseInt(input.value) + 1;
+        }
+
+        function decrementQuantity() {
+            const input = document.getElementById('quantity');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+
+        // Load product detail on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCartFromSession();
+            
+            if (productId) {
+                loadProductDetail(parseInt(productId));
+            }
+        });
+    </script>
+</body>
+</html>
