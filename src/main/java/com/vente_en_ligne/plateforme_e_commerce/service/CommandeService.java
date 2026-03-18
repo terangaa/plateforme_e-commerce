@@ -22,20 +22,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class CommandeService {
-    
+
     private final CommandeRepository commandeRepository;
     private final ProduitRepository produitRepository;
     private final EmailService emailService;
-    
+
     public List<Commande> obtenirToutesLesCommandes() {
         return commandeRepository.findAll();
     }
-    
+
     public Commande obtenirCommandeParId(Long id) {
         return commandeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée avec l'ID: " + id));
     }
-    
+
     public List<Commande> obtenirCommandesParStatut(StatutCommande statut) {
         return commandeRepository.findByStatut(statut);
     }
@@ -43,14 +43,14 @@ public class CommandeService {
     @Transactional
     public Commande creerCommande(RequeteCommandeDTO req) throws MessagingException {
         Commande commande = new Commande();
-        commande.setNomClient(req.getNomClient());
-        commande.setEmailClient(req.getEmailClient());
-        commande.setTelephoneClient(req.getTelephoneClient());
-        commande.setAdresseClient(req.getAdresseClient());
+        commande.setNomClient(req.getClientNom());
+        commande.setEmailClient(req.getClientEmail());
+        commande.setTelephoneClient(req.getClientTelephone());
+        commande.setAdresseClient(req.getAdresse());
         commande.setStatut(String.valueOf(StatutCommande.EN_ATTENTE));
 
         Commande finalCommande = commande;
-        List<ElementCommande> elements = req.getElements().stream().map(dto -> {
+        List<ElementCommande> elements = req.getProduits().stream().map(dto -> {
             Produit produit = produitRepository.findById(dto.getProduitId())
                     .orElseThrow(() -> new RuntimeException("Produit non trouvé : " + dto.getProduitId()));
 
@@ -84,7 +84,7 @@ public class CommandeService {
         log.info("Commande {} créée avec succès", commande.getId());
         return commande;
     }
-    
+
     @Transactional
     public Commande mettreAJourStatutCommande(Long id, StatutCommande statut) {
         Commande commande = commandeRepository.findById(id)
@@ -92,7 +92,7 @@ public class CommandeService {
         commande.setStatut(String.valueOf(statut));
         return commandeRepository.save(commande);
     }
-    
+
     public List<Commande> obtenirCommandesParEmailClient(String email) {
         return commandeRepository.findByEmailClient(email);
     }

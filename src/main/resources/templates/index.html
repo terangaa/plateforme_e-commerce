@@ -1,234 +1,1008 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShopLine - Votre Plateforme E-Commerce</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-top">
-            <div class="container">
-                <span>Livraison gratuite à partir de 50€ | Service client: +33 1 23 45 67 89</span>
-            </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShopLine - Votre Boutique en Ligne</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script th:src="@{/js/i18n.js}"></script>
+    <style>
+      /* Premium Hero Section */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          #0f172a 0%,
+          #1e293b 50%,
+          #334155 100%
+        );
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 80%;
+        height: 150%;
+        background: radial-gradient(
+          ellipse,
+          rgba(245, 158, 11, 0.15) 0%,
+          transparent 70%
+        );
+        animation: float 8s ease-in-out infinite;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        bottom: -30%;
+        left: -10%;
+        width: 60%;
+        height: 100%;
+        background: radial-gradient(
+          ellipse,
+          rgba(245, 158, 11, 0.1) 0%,
+          transparent 60%
+        );
+        animation: float 10s ease-in-out infinite reverse;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        50% {
+          transform: translate(30px, 20px);
+        }
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 700px;
+        padding: 40px;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: #f59e0b;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 24px;
+        animation: slideIn 0.6s ease-out;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        color: white;
+        animation: slideIn 0.8s ease-out;
+      }
+
+      .hero h1 span {
+        color: #f59e0b;
+        position: relative;
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        color: #94a3b8;
+        margin-bottom: 40px;
+        line-height: 1.7;
+        animation: slideIn 1s ease-out;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 16px;
+        animation: slideIn 1.2s ease-out;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        padding: 16px 36px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(245, 158, 11, 0.4);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 16px 36px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Features Section */
+      .features {
+        padding: 100px 0;
+        background: white;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+        margin-top: 50px;
+      }
+
+      .feature-card {
+        background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 40px 30px;
+        border-radius: 20px;
+        text-align: center;
+        transition: all 0.3s;
+        border: 1px solid #e2e8f0;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 2rem;
+        color: white;
+      }
+
+      .feature-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 12px;
+        color: #0f172a;
+      }
+
+      .feature-card p {
+        color: #64748b;
+        line-height: 1.6;
+      }
+
+      /* Categories Section */
+      .categories-section {
+        padding: 100px 0;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 60px;
+      }
+
+      .section-header h2 {
+        font-size: 2.5rem;
+        color: #0f172a;
+        margin-bottom: 16px;
+      }
+
+      .section-header p {
+        color: #64748b;
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+      }
+
+      .category-card {
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        height: 300px;
+        cursor: pointer;
+        transition: all 0.4s;
+      }
+
+      .category-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+      }
+
+      .category-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s;
+      }
+
+      .category-card:hover img {
+        transform: scale(1.1);
+      }
+
+      .category-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 30px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        color: white;
+      }
+
+      .category-overlay h3 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+      }
+
+      .category-overlay p {
+        opacity: 0.9;
+        font-size: 0.95rem;
+      }
+
+      /* Products Section */
+      .products-section {
+        padding: 100px 0;
+        background: white;
+      }
+
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+      }
+
+      .product-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s;
+        border: 1px solid #e2e8f0;
+      }
+
+      .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-image {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+      }
+
+      .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+      }
+
+      .product-card:hover .product-image img {
+        transform: scale(1.1);
+      }
+
+      .product-badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: #f59e0b;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .product-info {
+        padding: 24px;
+      }
+
+      .product-category {
+        color: #f59e0b;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+
+      .product-info h3 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+        color: #0f172a;
+      }
+
+      .product-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 16px;
+      }
+
+      .product-price span {
+        color: #64748b;
+        text-decoration: line-through;
+        font-size: 0.9rem;
+        font-weight: 400;
+        margin-left: 8px;
+      }
+
+      .product-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn-add-cart {
+        flex: 1;
+        background: #0f172a;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-add-cart:hover {
+        background: #f59e0b;
+      }
+
+      .btn-view {
+        width: 45px;
+        height: 45px;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #64748b;
+      }
+
+      .btn-view:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      /* CTA Section */
+      .cta-section {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 100px 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cta-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+
+      .cta-content {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .cta-content h2 {
+        font-size: 2.5rem;
+        color: white;
+        margin-bottom: 20px;
+      }
+
+      .cta-content p {
+        color: #94a3b8;
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Footer */
+      .footer {
+        background: #0f172a;
+        padding: 80px 0 30px;
+        color: #94a3b8;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 60px;
+        margin-bottom: 60px;
+      }
+
+      .footer-brand h3 {
+        font-size: 1.75rem;
+        color: white;
+        margin-bottom: 20px;
+      }
+
+      .footer-brand h3 span {
+        color: #f59e0b;
+      }
+
+      .footer-brand p {
+        line-height: 1.7;
+        margin-bottom: 24px;
+      }
+
+      .footer-social {
+        display: flex;
+        gap: 12px;
+      }
+
+      .footer-social a {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all 0.3s;
+      }
+
+      .footer-social a:hover {
+        background: #f59e0b;
+        transform: translateY(-3px);
+      }
+
+      .footer-column h4 {
+        color: white;
+        font-size: 1.1rem;
+        margin-bottom: 24px;
+      }
+
+      .footer-column ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .footer-column ul li {
+        margin-bottom: 12px;
+      }
+
+      .footer-column ul li a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      .footer-column ul li a:hover {
+        color: #f59e0b;
+      }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 30px;
+        text-align: center;
+        font-size: 0.9rem;
+      }
+
+      /* Animations */
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 1200px) {
+        .features-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .products-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 992px) {
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+        .categories-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .footer-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .hero {
+          min-height: 70vh;
+          text-align: center;
+        }
+        .hero-content {
+          padding: 30px 20px;
+        }
+        .hero h1 {
+          font-size: 2rem;
+        }
+        .hero-buttons {
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+        .categories-grid {
+          grid-template-columns: 1fr;
+        }
+        .products-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .products-grid {
+          grid-template-columns: 1fr;
+        }
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="container">
+        <a href="/" class="logo">Shop<span>Line</span></a>
+
+        <div class="nav-links">
+          <a href="/" class="active" data-translate="home">Accueil</a>
+          <a href="/products" data-translate="products">Produits</a>
+          <a href="/categories" data-translate="categories">Catégories</a>
+          <a href="/contact" data-translate="contact">Contact</a>
         </div>
-        <div class="header-main">
-            <div class="container">
-                <div class="header-content">
-                    <a href="/" class="logo">Shop<span>Line</span></a>
-                    
-                    <div class="search-box">
-                        <input type="text" placeholder="Rechercher un produit...">
-                        <button type="button"><i class="fas fa-search"></i></button>
-                    </div>
-                    
-                    <div class="header-actions">
-                        <a href="#" class="action-link">
-                            <i class="fas fa-user"></i>
-                            <span>Compte</span>
-                        </a>
-                        <a href="/panier" class="action-link cart-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span>Panier</span>
-                            <span class="cart-badge" id="cart-count">0</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+
+        <div class="nav-actions">
+          <div class="language-selector">
+            <select id="language-select" onchange="changeLanguage(this.value)">
+              <option value="fr">FR</option>
+              <option value="wo">WO</option>
+              <option value="ff">FF</option>
+              <option value="ar">AR</option>
+            </select>
+          </div>
+
+          <a href="/cart" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count" class="cart-count">0</span>
+          </a>
+
+          <div class="user-menu" id="user-menu">
+            <a href="/login" class="btn-login">
+              <i class="fas fa-user"></i>
+              <span data-translate="login">Connexion</span>
+            </a>
+          </div>
         </div>
-        <nav class="nav">
-            <div class="container">
-                <ul class="nav-list">
-                    <li><a href="/" class="nav-link">Accueil</a></li>
-                    <li><a href="/produits" class="nav-link">Produits</a></li>
-                    <li><a href="/produits?categorie=1" class="nav-link">Catégories</a></li>
-                    <li><a href="/produits?nouveau=true" class="nav-link">Nouveautés</a></li>
-                    <li><a href="/contact" class="nav-link">Contact</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="/" class="active">Accueil</a>
+      <a href="/products">Produits</a>
+      <a href="/categories">Catégories</a>
+      <a href="/contact">Contact</a>
+      <a href="/login">Connexion</a>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Bienvenue sur ShopLine</h1>
-                <p>Découvrez notre large gamme de produits de qualité à des prix exceptionnels. Shopping facile, rapide et sécurisé.</p>
-                <a href="/produits" class="btn btn-primary">Découvrir nos produits</a>
-            </div>
+      <div class="container">
+        <div class="hero-content">
+          <span class="hero-badge">
+            <i class="fas fa-star"></i>
+            <span data-translate="new_collection"
+              >Nouvelle Collection 2026</span
+            >
+          </span>
+          <h1>Découvrez l'Élégance <span>ShopLine</span></h1>
+          <p data-translate="hero_desc">
+            Explorez notre collection exclusive de valises, chaussures,
+            vêtements et accessoires. Qualité premium, livraison rapide.
+          </p>
+          <div class="hero-buttons">
+            <a href="/products" class="btn-primary">
+              <i class="fas fa-shopping-bag"></i>
+              <span data-translate="shop_now">Acheter maintenant</span>
+            </a>
+            <a href="/categories" class="btn-secondary">
+              <i class="fas fa-compass"></i>
+              <span data-translate="explorer">Explorer</span>
+            </a>
+          </div>
         </div>
-    </section>
-
-    <!-- Categories Section -->
-    <section class="categories">
-        <div class="container">
-            <div class="section-title">
-                <h2>Nos Catégories</h2>
-                <p>Parcourez nos différentes catégories de produits</p>
-            </div>
-            <div class="categories-grid" id="categories-grid">
-                <div class="category-card" onclick="filterProducts(1)">
-                    <i class="fas fa-laptop"></i>
-                    <h3>Informatique</h3>
-                    <p>Ordinateurs et accessoires</p>
-                </div>
-                <div class="category-card" onclick="filterProducts(2)">
-                    <i class="fas fa-mobile-alt"></i>
-                    <h3>Téléphonie</h3>
-                    <p>Smartphones et tablettes</p>
-                </div>
-                <div class="category-card" onclick="filterProducts(3)">
-                    <i class="fas fa-headphones"></i>
-                    <h3>Audio</h3>
-                    <p>Casques et écouteurs</p>
-                </div>
-                <div class="category-card" onclick="filterProducts(4)">
-                    <i class="fas fa-camera"></i>
-                    <h3>Photo & Vidéo</h3>
-                    <p>Appareils photo et caméras</p>
-                </div>
-                <div class="category-card" onclick="filterProducts(5)">
-                    <i class="fas fa-gamepad"></i>
-                    <h3>Gaming</h3>
-                    <p>Consoles et jeux vidéo</p>
-                </div>
-                <div class="category-card" onclick="filterProducts(6)">
-                    <i class="fas fa-clock"></i>
-                    <h3>Montres</h3>
-                    <p>Montres connectées</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Featured Products -->
-    <section class="products">
-        <div class="container">
-            <div class="section-title">
-                <h2>Produits Vedettes</h2>
-                <p>Découvrez notre sélection de produits populaires</p>
-            </div>
-            <div class="products-grid" id="products-grid">
-                <!-- Products will be loaded dynamically -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <i class="fas fa-box" style="font-size: 5rem; color: #ccc;"></i>
-                        <div class="product-actions">
-                            <button class="product-action-btn" title="Voir">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="product-action-btn" title="Ajouter au panier">
-                                <i class="fas fa-cart-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <span class="product-category">Chargement...</span>
-                        <h3 class="product-title">Veuillez patienter</h3>
-                        <div class="product-price">
-                            <span class="current-price">---</span>
-                        </div>
-                        <div class="product-rating">
-                            <span class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
-                            <span class="rating-count">(0 avis)</span>
-                        </div>
-                        <button class="add-to-cart-btn">Ajouter au panier</button>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 40px;">
-                <a href="/produits" class="btn btn-secondary">Voir tous les produits</a>
-            </div>
-        </div>
+      </div>
     </section>
 
     <!-- Features Section -->
-    <section style="background: #f8f9fa; padding: 60px 0;">
-        <div class="container">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
-                <div style="text-align: center; padding: 20px;">
-                    <i class="fas fa-truck" style="font-size: 3rem; color: #3498db; margin-bottom: 15px;"></i>
-                    <h3 style="margin-bottom: 10px;">Livraison Gratuite</h3>
-                    <p style="color: #7f8c8d;">Livraison gratuite pour toute commande supérieure à 50€</p>
-                </div>
-                <div style="text-align: center; padding: 20px;">
-                    <i class="fas fa-shield-alt" style="font-size: 3rem; color: #3498db; margin-bottom: 15px;"></i>
-                    <h3 style="margin-bottom: 10px;">Paiement Sécurisé</h3>
-                    <p style="color: #7f8c8d;">Vos paiements sont 100% sécurisés</p>
-                </div>
-                <div style="text-align: center; padding: 20px;">
-                    <i class="fas fa-undo" style="font-size: 3rem; color: #3498db; margin-bottom: 15px;"></i>
-                    <h3 style="margin-bottom: 10px;">Retours Faciles</h3>
-                    <p style="color: #7f8c8d;">30 jours pour retourner vos produits</p>
-                </div>
-                <div style="text-align: center; padding: 20px;">
-                    <i class="fas fa-headset" style="font-size: 3rem; color: #3498db; margin-bottom: 15px;"></i>
-                    <h3 style="margin-bottom: 10px;">Support 24/7</h3>
-                    <p style="color: #7f8c8d;">Notre équipe est disponible à tout moment</p>
-                </div>
+    <section class="features">
+      <div class="container">
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-shipping-fast"></i>
             </div>
+            <h3 data-translate="free_shipping">Livraison Gratuite</h3>
+            <p data-translate="free_shipping_desc">
+              Pour toute commande supérieure à 50 000 CFA
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 data-translate="secure_payment">Paiement Sécurisé</h3>
+            <p data-translate="secure_payment_desc">
+              Wave, Orange Money, Free Money
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-undo"></i>
+            </div>
+            <h3 data-translate="return_policy">Retours Gratuits</h3>
+            <p data-translate="return_policy_desc">
+              Sous 30 jours après réception
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-headset"></i>
+            </div>
+            <h3 data-translate="support_247">Support 24/7</h3>
+            <p data-translate="support_247_desc">
+              Assistance personnalisée disponible
+            </p>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 data-translate="our_categories">Nos Catégories</h2>
+          <p data-translate="categories_desc">
+            Parcourez nos différentes catégories de produits
+          </p>
+        </div>
+
+        <div class="categories-grid">
+          <a href="/products?category=valises" class="category-card">
+            <img th:src="@{/images/valises/valise_rose1.jpeg}" alt="Valises" />
+            <div class="category-overlay">
+              <h3 data-translate="luggage">Valises</h3>
+              <p data-translate="luggage_desc">
+                Valises IVS, Original, Petits et Grands modèles
+              </p>
+            </div>
+          </a>
+          <a href="/products?category=vetements" class="category-card">
+            <img
+              th:src="@{/images/valises/valise_bleu1 - Copie.jpeg}"
+              alt="Vêtements"
+            />
+            <div class="category-overlay">
+              <h3 data-translate="clothing">Vêtements</h3>
+              <p data-translate="clothing_desc">Grandes et petites tailles</p>
+            </div>
+          </a>
+          <a href="/products?category=chaussures" class="category-card">
+            <img
+              th:src="@{/images/valises/valise_gris1.jpeg}"
+              alt="Chaussures"
+            />
+            <div class="category-overlay">
+              <h3 data-translate="shoes">Chaussures</h3>
+              <p data-translate="shoes_desc">Chaussures de qualité</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 data-translate="featured_products">Produits en Vedette</h2>
+          <p data-translate="featured_desc">
+            Les produits les plus populaires de notre boutique
+          </p>
+        </div>
+
+        <div class="products-grid" id="featured-products">
+          <!-- Products will be loaded dynamically -->
+        </div>
+
+        <div style="text-align: center; margin-top: 50px">
+          <a href="/products" class="btn-primary">
+            <span data-translate="view_all_products"
+              >Voir tous les produits</span
+            >
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-content">
+          <h2 data-translate="cta_title">Prêt à faire vos achats ?</h2>
+          <p data-translate="cta_desc">
+            Rejoignez des milliers de clients satisfaits et bénéficiez de nos
+            offres exclusives.
+          </p>
+          <a href="/products" class="btn-primary">
+            <i class="fas fa-shopping-bag"></i>
+            <span data-translate="start_shopping">Commencer mes achats</span>
+          </a>
+        </div>
+      </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>ShopLine</h3>
-                    <p style="color: rgba(255,255,255,0.7);">Votre plateforme e-commerce de confiance pour tous vos achats en ligne.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Liens Rapides</h3>
-                    <ul>
-                        <li><a href="/produits">Produits</a></li>
-                        <li><a href="/produits?nouveau=true">Nouveautés</a></li>
-                        <li><a href="/contact">Contact</a></li>
-                        <li><a href="/a propos">À propos</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Service Client</h3>
-                    <ul>
-                        <li><a href="/faq">FAQ</a></li>
-                        <li><a href="/livraison">Livraison</a></li>
-                        <li><a href="/retours">Retours</a></li>
-                        <li><a href="/conditions">CGV</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contactez-nous</h3>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> contact@shopline.fr</li>
-                        <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Paris, France</li>
-                    </ul>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <h3>Shop<span>Line</span></h3>
+            <p data-translate="footer_desc">
+              Votre boutique en ligne de confiance pour tous vos besoins en
+              valises, vêtements, chaussures et accessoires.
+            </p>
+            <div class="footer-social">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-whatsapp"></i></a>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 ShopLine. Tous droits réservés.</p>
-            </div>
+          </div>
+          <div class="footer-column">
+            <h4 data-translate="quick_links">Liens Rapides</h4>
+            <ul>
+              <li><a href="/" data-translate="home">Accueil</a></li>
+              <li>
+                <a href="/products" data-translate="products">Produits</a>
+              </li>
+              <li>
+                <a href="/categories" data-translate="categories">Catégories</a>
+              </li>
+              <li><a href="/contact" data-translate="contact">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h4 data-translate="categories">Catégories</h4>
+            <ul>
+              <li>
+                <a href="/products?category=valises" data-translate="luggage"
+                  >Valises</a
+                >
+              </li>
+              <li>
+                <a href="/products?category=vetements" data-translate="clothing"
+                  >Vêtements</a
+                >
+              </li>
+              <li>
+                <a href="/products?category=chaussures" data-translate="shoes"
+                  >Chaussures</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/products?category=accessoires"
+                  data-translate="accessories"
+                  >Accessoires</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h4 data-translate="contact">Contact</h4>
+            <ul>
+              <li><i class="fas fa-envelope"></i> ceesaysamba24@gmail.com</li>
+              <li><i class="fas fa-phone"></i> +221 77 XXX XX XX</li>
+              <li><i class="fas fa-map-marker-alt"></i> Dakar, Sénégal</li>
+            </ul>
+          </div>
         </div>
+        <div class="footer-bottom">
+          <p>
+            &copy; 2026 ShopLine.
+            <span data-translate="all_rights_reserved"
+              >Tous droits réservés.</span
+            >
+          </p>
+        </div>
+      </div>
     </footer>
 
-    <script th:src="@{/js/app.js}"></script>
     <script>
-        // Load products on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadProducts();
-            loadCategories();
-            updateCartUI();
-        });
+      // Load featured products
+      async function loadFeaturedProducts() {
+        try {
+          const response = await fetch("/api/produits");
+          const produits = await response.json();
+
+          const container = document.getElementById("featured-products");
+          const featuredProducts = produits.slice(0, 8);
+
+          container.innerHTML = featuredProducts
+            .map(
+              (produit) => `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="${produit.imageUrl || "/images/valises/valise_rose1.jpeg"}" alt="${produit.nom}">
+                            <span class="product-badge">${produit.categorie || "Nouveau"}</span>
+                        </div>
+                        <div class="product-info">
+                            <span class="product-category">${produit.categorie || "Produit"}</span>
+                            <h3>${produit.nom}</h3>
+                            <p class="product-price">${produit.prix.toLocaleString("fr-FR")} CFA</p>
+                            <div class="product-actions">
+                                <button class="btn-add-cart" onclick="addToCart(${produit.id})">
+                                    <i class="fas fa-cart-plus"></i>
+                                    <span data-translate="add_to_cart">Ajouter</span>
+                                </button>
+                                <a href="/product/${produit.id}" class="btn-view">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `,
+            )
+            .join("");
+        } catch (error) {
+          console.error("Erreur:", error);
+        }
+      }
+
+      // Add to cart
+      function addToCart(produitId) {
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const existingItem = cart.find((item) => item.id === produitId);
+
+        if (existingItem) {
+          existingItem.quantity++;
+        } else {
+          cart.push({ id: produitId, quantity: 1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        showNotification("Produit ajouté au panier!", "success");
+      }
+
+      // Update cart count
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cart-count").textContent = count;
+      }
+
+      // Check user login
+      function checkUserLogin() {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        const userMenu = document.getElementById("user-menu");
+
+        if (user) {
+          userMenu.innerHTML = `
+                    <div class="user-dropdown">
+                        <button class="user-btn">
+                            <i class="fas fa-user-circle"></i>
+                            ${user.prenom || user.email}
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="/profile"><i class="fas fa-user"></i> Mon profil</a>
+                            <a href="/orders"><i class="fas fa-box"></i> Mes commandes</a>
+                            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                        </div>
+                    </div>
+                `;
+        }
+      }
+
+      // Logout function
+      function logout() {
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
+
+      // Mobile menu toggle
+      function toggleMobileMenu() {
+        const menu = document.getElementById("mobile-menu");
+        menu.classList.toggle("active");
+      }
+
+      // Show notification
+      function showNotification(message, type) {
+        // Simple notification - can be enhanced
+        alert(message);
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        initLanguage();
+        loadFeaturedProducts();
+        updateCartCount();
+        checkUserLogin();
+      });
     </script>
-</body>
+  </body>
 </html>

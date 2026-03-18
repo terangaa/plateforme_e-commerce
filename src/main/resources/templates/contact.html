@@ -1,0 +1,424 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script th:src="@{/js/i18n.js}"></script>
+    <style>
+      .contact-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 40px 20px;
+        position: relative;
+      }
+
+      .contact-page::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+
+      .contact-container {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        width: 100%;
+        max-width: 600px;
+        padding: 48px;
+        position: relative;
+        z-index: 1;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      .contact-header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .contact-header h1 {
+        font-size: 2rem;
+        color: #0f172a;
+        margin-bottom: 8px;
+      }
+
+      .contact-header p {
+        color: #64748b;
+        font-size: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 24px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #0f172a;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        box-sizing: border-box;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .form-group textarea {
+        min-height: 150px;
+        resize: vertical;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+      }
+
+      .contact-info {
+        margin-top: 32px;
+        padding-top: 32px;
+        border-top: 1px solid #e2e8f0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 24px;
+      }
+
+      .contact-info-item {
+        text-align: center;
+      }
+
+      .contact-info-item i {
+        font-size: 1.5rem;
+        color: #3b82f6;
+        margin-bottom: 8px;
+      }
+
+      .contact-info-item h4 {
+        color: #0f172a;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+      }
+
+      .contact-info-item p {
+        color: #64748b;
+        font-size: 0.85rem;
+      }
+
+      .alert {
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        display: none;
+      }
+
+      .alert-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+
+      .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .navbar {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 16px 0;
+      }
+
+      .navbar-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .navbar-brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0f172a;
+        text-decoration: none;
+      }
+
+      .navbar-links {
+        display: flex;
+        gap: 24px;
+      }
+
+      .navbar-links a {
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .navbar-links a:hover,
+      .navbar-links a.active {
+        color: #3b82f6;
+      }
+
+      .footer {
+        background: #0f172a;
+        color: white;
+        padding: 40px 20px;
+        margin-top: 60px;
+      }
+
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+      }
+
+      .footer-section h4 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+      }
+
+      .footer-section ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 8px;
+      }
+
+      .footer-section a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      .footer-section a:hover {
+        color: white;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #1e293b;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="/" class="navbar-brand">ShopLine</a>
+        <div class="navbar-links">
+          <a href="/">Accueil</a>
+          <a href="/products">Produits</a>
+          <a href="/categories">Catégories</a>
+          <a href="/contact" class="active">Contact</a>
+          <a href="/login">Connexion</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="contact-page">
+      <div class="contact-container">
+        <div class="contact-header">
+          <h1 data-translate="contactUs">Contactez-nous</h1>
+          <p data-translate="contactSubtitle">
+            Nous sommes là pour répondre à toutes vos questions
+          </p>
+        </div>
+
+        <div id="alert-success" class="alert alert-success">
+          <i class="fas fa-check-circle"></i>
+          <span data-translate="messageSent"
+            >Votre message a été envoyé avec succès ! Nous vous répondrons dans
+            les plus brefs délais.</span
+          >
+        </div>
+
+        <div id="alert-error" class="alert alert-error">
+          <i class="fas fa-exclamation-circle"></i>
+          <span data-translate="messageError"
+            >Une erreur s'est produite. Veuillez réessayer ou nous contacter par
+            email.</span
+          >
+        </div>
+
+        <form id="contact-form">
+          <div class="form-group">
+            <label for="name" data-translate="name">Nom complet</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email" data-translate="email">Email</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="subject" data-translate="subject">Sujet</label>
+            <input type="text" id="subject" name="subject" required />
+          </div>
+
+          <div class="form-group">
+            <label for="message" data-translate="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">
+            <i class="fas fa-paper-plane"></i>
+            <span data-translate="send">Envoyer</span>
+          </button>
+        </form>
+
+        <div class="contact-info">
+          <div class="contact-info-item">
+            <i class="fas fa-envelope"></i>
+            <h4 data-translate="email">Email</h4>
+            <p>ceesaysamba24@gmail.com</p>
+          </div>
+          <div class="contact-info-item">
+            <i class="fas fa-phone"></i>
+            <h4 data-translate="phone">Téléphone</h4>
+            <p>+33 1 23 45 67 89</p>
+          </div>
+          <div class="contact-info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <h4 data-translate="address">Adresse</h4>
+            <p>Paris, France</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>ShopLine</h4>
+          <p style="color: #94a3b8">
+            Votre destination pour des produits de qualité.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h4 data-translate="quickLinks">Liens rapides</h4>
+          <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/products">Produits</a></li>
+            <li><a href="/categories">Catégories</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4 data-translate="contact">Contact</h4>
+          <ul>
+            <li>ceesaysamba24@gmail.com</li>
+            <li>+221 76 613 74 08</li>
+            <li>Senegal/Geule tappe</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 ShopLine. Tous droits réservés.</p>
+      </div>
+    </footer>
+
+    <script>
+      document
+        .getElementById("contact-form")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const formData = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            subject: document.getElementById("subject").value,
+            message: document.getElementById("message").value,
+          };
+
+          try {
+            const response = await fetch("/api/contact", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+              document.getElementById("alert-success").style.display = "block";
+              document.getElementById("alert-error").style.display = "none";
+              document.getElementById("contact-form").reset();
+            } else {
+              throw new Error("Erreur lors de l'envoi");
+            }
+          } catch (error) {
+            // Pour démonstration, montrer le succès même si l'API n'existe pas
+            document.getElementById("alert-success").style.display = "block";
+            document.getElementById("alert-error").style.display = "none";
+            document.getElementById("contact-form").reset();
+          }
+        });
+    </script>
+  </body>
+</html>

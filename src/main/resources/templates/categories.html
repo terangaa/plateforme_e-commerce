@@ -1,157 +1,518 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Catégories - ShopLine</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script th:src="@{/js/i18n.js}"></script>
     <style>
-        body { font-family:'Arial',sans-serif; margin:0; background:#f5f5f5; }
-        nav {
-            background:#ff6a00; display:flex; justify-content: space-between; align-items:center; padding:15px 50px; box-shadow:0 2px 10px rgba(0,0,0,0.1); flex-wrap:wrap;
+      .categories-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding-top: 120px;
+        padding-bottom: 60px;
+      }
+
+      .categories-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .categories-header {
+        text-align: center;
+        margin-bottom: 60px;
+      }
+
+      .categories-header h1 {
+        font-size: 2.5rem;
+        color: #0f172a;
+        margin-bottom: 12px;
+      }
+
+      .categories-header p {
+        color: #64748b;
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+      }
+
+      .category-card {
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        height: 350px;
+        cursor: pointer;
+        transition: all 0.4s;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .category-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+      }
+
+      .category-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s;
+      }
+
+      .category-card:hover img {
+        transform: scale(1.15);
+      }
+
+      .category-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 40px 30px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+        color: white;
+        z-index: 2;
+      }
+
+      .category-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .category-overlay h3 {
+        font-size: 1.75rem;
+        margin-bottom: 10px;
+      }
+
+      .category-overlay p {
+        opacity: 0.9;
+        font-size: 1rem;
+        margin-bottom: 16px;
+      }
+
+      .category-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f59e0b;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .category-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 0.3) 0%,
+          transparent 100%
+        );
+        z-index: 1;
+      }
+
+      /* Featured Products Section */
+      .category-products {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        display: none;
+      }
+
+      .category-card:hover .category-products {
+        display: block;
+      }
+
+      .mini-products {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+      }
+
+      .mini-product {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s;
+      }
+
+      .mini-product:hover {
+        border-color: #f59e0b;
+        transform: scale(1.1);
+      }
+
+      .mini-product img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Features Section */
+      .features-mini {
+        background: white;
+        border-radius: 24px;
+        padding: 50px;
+        margin-top: 80px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+      }
+
+      .feature-mini-item {
+        text-align: center;
+      }
+
+      .feature-mini-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 1.5rem;
+        color: #f59e0b;
+      }
+
+      .feature-mini-item h4 {
+        color: #0f172a;
+        margin-bottom: 8px;
+      }
+
+      .feature-mini-item p {
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 1200px) {
+        .categories-grid {
+          grid-template-columns: repeat(2, 1fr);
         }
-        nav .logo { color:#fff; font-size:24px; font-weight:bold; text-decoration:none; }
-        nav ul { list-style:none; display:flex; margin:0; padding:0; gap:25px; }
-        nav ul li a { color:#fff; text-decoration:none; font-weight:bold; transition:color 0.3s; }
-        nav ul li a:hover { color:#333; }
-
-        .container { max-width:1200px; margin:auto; padding:30px 20px; }
-        h2.section-title { text-align:center; color:#ff6a00; margin-bottom:20px; font-size:28px; }
-
-        /* Barre de recherche */
-        .search-bar { text-align:center; margin-bottom:20px; }
-        .search-bar input {
-            width:250px; padding:10px 15px; border-radius:25px; border:1px solid #ff6a00;
-            outline:none; font-size:16px; transition: all 0.3s;
+        .features-mini {
+          grid-template-columns: repeat(2, 1fr);
         }
-        .search-bar input:focus { box-shadow:0 0 10px rgba(255,106,0,0.5); }
+      }
 
-        /* Filtres */
-        .filter-buttons { text-align:center; margin-bottom:30px; }
-        .filter-buttons button {
-            background:#fff; border:1px solid #ff6a00; color:#ff6a00; padding:10px 20px; margin:5px;
-            border-radius:25px; cursor:pointer; transition: all 0.3s;
+      @media (max-width: 768px) {
+        .categories-grid {
+          grid-template-columns: 1fr;
         }
-        .filter-buttons button.active,
-        .filter-buttons button:hover { background:#ff6a00; color:#fff; }
-
-        /* Grid catégories */
-        .categories-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:25px; }
-        .category-card { background:#fff; border-radius:15px; overflow:hidden; text-align:center; transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s; cursor:pointer; opacity:1; }
-        .category-card.hide { opacity:0; transform: scale(0.95); pointer-events:none; }
-        .category-card:hover { transform: translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.2); }
-        .category-image { width:100%; height:180px; object-fit:cover; transition: transform 0.3s; }
-        .category-card:hover .category-image { transform: scale(1.05); }
-        .category-content { padding:20px; }
-        .category-title { font-size:20px; font-weight:bold; margin-bottom:10px; color:#333; }
-        .category-count { font-size:14px; color:#777; }
-
-        footer { background:#333; color:#fff; text-align:center; padding:30px 20px; margin-top:50px; }
-        footer a { color:#ff6a00; text-decoration:none; }
-        footer .social-icons { margin-top:10px; }
-        footer .social-icons a { margin:0 10px; color:#fff; font-size:18px; transition: color 0.3s; }
-        footer .social-icons a:hover { color:#ff6a00; }
-
-        @media (max-width:768px) {
-            nav { padding:15px 20px; flex-direction:column; align-items:flex-start; }
-            nav ul { flex-direction:column; gap:10px; margin-top:10px; }
-            .categories-grid { grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); }
-            .search-bar input { width:100%; max-width:300px; }
+        .category-card {
+          height: 280px;
         }
+        .features-mini {
+          grid-template-columns: 1fr;
+          padding: 30px;
+        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="container">
+        <a href="/" class="logo">Shop<span>Line</span></a>
 
-<!-- Navbar -->
-<nav>
-    <a href="/" class="logo">ShopLine</a>
-    <ul>
-        <li><a href="/">Accueil</a></li>
-        <li><a href="/produits">Produits</a></li>
-        <li><a href="/categories">Catégories</a></li>
-        <li><a href="/contact">Contact</a></li>
-    </ul>
-</nav>
-
-<div class="container">
-    <h2 class="section-title">Nos Catégories</h2>
-
-    <!-- Barre de recherche -->
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Rechercher une catégorie...">
-    </div>
-
-    <!-- Filtres -->
-    <div class="filter-buttons">
-        <button class="filter-btn active" data-filter="all">Toutes</button>
-        <button class="filter-btn" data-filter="Valise IVS">Valise IVS</button>
-        <button class="filter-btn" data-filter="Valise Original">Valise Original</button>
-        <button class="filter-btn" data-filter="Valise petit modèle">Valise petit modèle</button>
-        <button class="filter-btn" data-filter="Valise grand modèle">Valise grand modèle</button>
-    </div>
-
-    <div class="categories-grid">
-        <div th:each="cat : ${categories}" class="category-card" th:data-category="${cat.name}">
-            <a th:href="@{/categories/{id}/produits(id=${cat.id})}" class="category-link">
-                <img th:src="${cat.imageUrl != null ? cat.imageUrl : '/images/default-category.jpg'}" alt="Image catégorie" class="category-image">
-                <div class="category-content">
-                    <div class="category-title" th:text="${cat.name}">Nom catégorie</div>
-                    <div class="category-count" th:text="${#lists.size(cat.produits)} + ' produits'">0 produits</div>
-                </div>
-            </a>
+        <div class="nav-links">
+          <a href="/">Accueil</a>
+          <a href="/products">Produits</a>
+          <a href="/categories" class="active">Catégories</a>
+          <a href="/contact">Contact</a>
         </div>
+
+        <div class="nav-actions">
+          <div class="language-selector">
+            <select id="language-select" onchange="changeLanguage(this.value)">
+              <option value="fr">FR</option>
+              <option value="wo">WO</option>
+              <option value="ff">FF</option>
+              <option value="ar">AR</option>
+            </select>
+          </div>
+
+          <a href="/cart" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count" class="cart-count">0</span>
+          </a>
+
+          <div id="user-menu">
+            <a href="/login" class="btn-login">
+              <i class="fas fa-user"></i>
+              <span>Connexion</span>
+            </a>
+          </div>
+        </div>
+
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Categories Page -->
+    <div class="categories-page">
+      <div class="categories-container">
+        <div class="categories-header">
+          <h1 data-translate="our_categories">Nos Catégories</h1>
+          <p>Parcourez nos différentes catégories de produits de qualité</p>
+        </div>
+
+        <div class="categories-grid">
+          <!-- Valises -->
+          <a href="/products?category=valises" class="category-card">
+            <img th:src="@{/images/valises/valise_rose1.jpeg}" alt="Valises" />
+            <div class="category-overlay">
+              <div class="category-icon">
+                <i class="fas fa-suitcase-rolling"></i>
+              </div>
+              <h3 data-translate="luggage">Valises</h3>
+              <p>IVS, Original, Petits et Grands modèles</p>
+              <span class="category-count">
+                <i class="fas fa-box"></i>
+                <span id="valises-count">12</span> produits
+              </span>
+            </div>
+          </a>
+
+          <!-- Vêtements -->
+          <a href="/products?category=vetements" class="category-card">
+            <img
+              th:src="@{/images/valises/valise_bleu1 - Copie.jpeg}"
+              alt="Vêtements"
+            />
+            <div class="category-overlay">
+              <div class="category-icon">
+                <i class="fas fa-tshirt"></i>
+              </div>
+              <h3 data-translate="clothing">Vêtements</h3>
+              <p>Grandes et petites tailles</p>
+              <span class="category-count">
+                <i class="fas fa-box"></i>
+                <span id="vetements-count">8</span> produits
+              </span>
+            </div>
+          </a>
+
+          <!-- Chaussures -->
+          <a href="/products?category=chaussures" class="category-card">
+            <img
+              th:src="@{/images/valises/valise_gris1.jpeg}"
+              alt="Chaussures"
+            />
+            <div class="category-overlay">
+              <div class="category-icon">
+                <i class="fas fa-shoe-prints"></i>
+              </div>
+              <h3 data-translate="shoes">Chaussures</h3>
+              <p>Chaussures de qualité premium</p>
+              <span class="category-count">
+                <i class="fas fa-box"></i>
+                <span id="chaussures-count">6</span> produits
+              </span>
+            </div>
+          </a>
+
+          <!-- Accessoires -->
+          <a href="/products?category=accessoires" class="category-card">
+            <img
+              th:src="@{/images/valises/valise_maron1 - Copie.jpeg}"
+              alt="Accessoires"
+            />
+            <div class="category-overlay">
+              <div class="category-icon">
+                <i class="fas fa-gem"></i>
+              </div>
+              <h3 data-translate="accessories">Accessoires</h3>
+              <p>Accessoires divers</p>
+              <span class="category-count">
+                <i class="fas fa-box"></i>
+                <span id="accessoires-count">15</span> produits
+              </span>
+            </div>
+          </a>
+
+          <!-- Bassins -->
+          <a href="/products?category=bassins" class="category-card">
+            <img
+              th:src="@{/images/valises/valise_bleu2 - Copie.jpeg}"
+              alt="Bassins"
+            />
+            <div class="category-overlay">
+              <div class="category-icon">
+                <i class="fas fa-bath"></i>
+              </div>
+              <h3>Bassins</h3>
+              <p>Bassins et contenants</p>
+              <span class="category-count">
+                <i class="fas fa-box"></i>
+                <span id="bassins-count">5</span> produits
+              </span>
+            </div>
+          </a>
+
+          <!-- Rideaux -->
+          <a href="/products?category=rideaux" class="category-card">
+            <img
+              th:src="@{/images/valises/valise_rose2 - Copie.jpeg}"
+              alt="Rideaux"
+            />
+            <div class="category-overlay">
+              <div class="category-icon">
+                <i class="fas fa-door-closed"></i>
+              </div>
+              <h3>Rideaux</h3>
+              <p>Rideaux et tentures</p>
+              <span class="category-count">
+                <i class="fas fa-box"></i>
+                <span id="rideaux-count">7</span> produits
+              </span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Features Mini -->
+        <div class="features-mini">
+          <div class="feature-mini-item">
+            <div class="feature-mini-icon">
+              <i class="fas fa-shipping-fast"></i>
+            </div>
+            <h4>Livraison rapide</h4>
+            <p>Partout au Sénégal</p>
+          </div>
+          <div class="feature-mini-item">
+            <div class="feature-mini-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h4>Paiements sécurisés</h4>
+            <p>Wave, Orange, Free</p>
+          </div>
+          <div class="feature-mini-item">
+            <div class="feature-mini-icon">
+              <i class="fas fa-undo"></i>
+            </div>
+            <h4>Retours gratuits</h4>
+            <p>Sous 30 jours</p>
+          </div>
+          <div class="feature-mini-item">
+            <div class="feature-mini-icon">
+              <i class="fas fa-headset"></i>
+            </div>
+            <h4>Support 24/7</h4>
+            <p>À votre service</p>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 
-<!-- Footer -->
-<footer>
-    <p>&copy; 2026 ShopLine. Tous droits réservés.</p>
-    <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-    </div>
-</footer>
+    <script>
+      // Load product counts
+      async function loadCategoryCounts() {
+        try {
+          const response = await fetch("/api/produits");
+          const products = await response.json();
 
-<!-- JS filtrage + recherche -->
-<script>
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const categoryCards = document.querySelectorAll('.category-card');
-    const searchInput = document.getElementById('searchInput');
+          const counts = {
+            valises: 0,
+            vetements: 0,
+            chaussures: 0,
+            accessoires: 0,
+            basins: 0,
+            rideaux: 0,
+          };
 
-    let activeFilter = 'all';
+          products.forEach((p) => {
+            const cat = (p.categorie || "").toLowerCase();
+            if (cat.includes("valis")) counts.valises++;
+            else if (cat.includes("vet") || cat.includes("habit"))
+              counts.vetements++;
+            else if (cat.includes("chauss")) counts.chaussures++;
+            else if (cat.includes("bassin")) counts.bassins++;
+            else if (cat.includes("rideau")) counts.rideaux++;
+            else counts.accessoires++;
+          });
 
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            activeFilter = btn.getAttribute('data-filter');
-            filterCards();
-        });
-    });
+          document.getElementById("valises-count").textContent =
+            counts.valises || 12;
+          document.getElementById("vetements-count").textContent =
+            counts.vetements || 8;
+          document.getElementById("chaussures-count").textContent =
+            counts.chaussures || 6;
+          document.getElementById("accessoires-count").textContent =
+            counts.accessoires || 15;
+          document.getElementById("bassins-count").textContent =
+            counts.bassins || 5;
+          document.getElementById("rideaux-count").textContent =
+            counts.rideaux || 7;
+        } catch (error) {
+          console.error("Erreur:", error);
+        }
+      }
 
-    searchInput.addEventListener('input', () => {
-        filterCards();
-    });
+      // Update cart count
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cart-count").textContent = count;
+      }
 
-    function filterCards() {
-        const searchText = searchInput.value.toLowerCase();
-        categoryCards.forEach(card => {
-            const categoryName = card.getAttribute('data-category').toLowerCase();
-            const matchesFilter = activeFilter === 'all' || card.getAttribute('data-category') === activeFilter;
-            const matchesSearch = categoryName.includes(searchText);
+      // Check user login
+      function checkUserLogin() {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        const userMenu = document.getElementById("user-menu");
 
-            if(matchesFilter && matchesSearch) {
-                card.classList.remove('hide');
-            } else {
-                card.classList.add('hide');
-            }
-        });
-    }
-</script>
+        if (user) {
+          userMenu.innerHTML = `
+                    <div class="user-dropdown">
+                        <button class="user-btn">
+                            <i class="fas fa-user-circle"></i>
+                            ${user.prenom || user.email}
+                        </button>
+                    </div>
+                `;
+        }
+      }
 
-</body>
+      // Mobile menu toggle
+      function toggleMobileMenu() {
+        const menu = document.getElementById("mobile-menu");
+        menu.classList.toggle("active");
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        initLanguage();
+        loadCategoryCounts();
+        updateCartCount();
+        checkUserLogin();
+      });
+    </script>
+  </body>
 </html>

@@ -1,181 +1,830 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nos Produits - ShopLine</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Produits - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script th:src="@{/js/i18n.js}"></script>
     <style>
-        body { font-family: 'Arial', sans-serif; background:#f5f5f5; margin:0; padding:0; }
-        a { text-decoration:none; }
+      .products-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding-top: 120px;
+        padding-bottom: 60px;
+      }
 
-        /* Container */
-        .container { max-width:1200px; margin:auto; padding:20px; }
+      .products-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
 
-        /* Header */
-        .header { background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
-        .header-top { background:#ff6a00; color:#fff; text-align:center; font-size:14px; padding:5px 0; }
-        .header-main { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; }
-        .logo { font-size:24px; font-weight:bold; color:#ff6a00; }
-        .search-box input { padding:8px 12px; border-radius:20px 0 0 20px; border:1px solid #ddd; outline:none; }
-        .search-box button { padding:8px 12px; border-radius:0 20px 20px 0; border:none; background:#ff6a00; color:#fff; cursor:pointer; }
-        .header-actions a { margin-left:20px; text-decoration:none; color:#333; display:flex; align-items:center; position:relative; }
-        .header-actions i { margin-right:5px; }
-        .cart-badge { background:#ef4444; color:#fff; font-size:12px; padding:2px 6px; border-radius:50%; position:absolute; top:-8px; right:-10px; }
+      .products-header {
+        margin-bottom: 40px;
+      }
 
-        /* Nav */
-        .nav { background:#ff6a00; }
-        .nav-list { display:flex; list-style:none; padding:0; margin:0; }
-        .nav-list li { margin:0; }
-        .nav-link { display:block; padding:12px 20px; color:#fff; font-weight:bold; }
-        .nav-link:hover { background:#ee0979; }
+      .products-header h1 {
+        font-size: 2.5rem;
+        color: #0f172a;
+        margin-bottom: 12px;
+      }
 
-        /* Breadcrumb */
-        .breadcrumb { background:#fff; padding:10px 20px; margin:20px 0; border-radius:10px; }
-        .breadcrumb-list { display:flex; list-style:none; padding:0; margin:0; }
-        .breadcrumb-item a { color:#ff6a00; }
-        .breadcrumb-separator { margin:0 5px; color:#888; }
+      .products-header p {
+        color: #64748b;
+        font-size: 1.1rem;
+      }
 
-        /* Bouton ajouter produit */
-        .btn-submit {
-            display:inline-block; padding:12px 24px;
-            background:linear-gradient(135deg,#ff6a00,#ee0979);
-            color:#fff; font-weight:bold; border-radius:50px;
-            box-shadow:0 4px 15px rgba(0,0,0,0.2); transition:all 0.3s ease;
+      .products-content {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 40px;
+      }
+
+      /* Filters Sidebar */
+      .filters-sidebar {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        height: fit-content;
+        position: sticky;
+        top: 140px;
+      }
+
+      .filter-section {
+        margin-bottom: 30px;
+      }
+
+      .filter-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .filter-title {
+        font-size: 1rem;
+        color: #0f172a;
+        margin-bottom: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .filter-title i {
+        color: #f59e0b;
+      }
+
+      .filter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .filter-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        padding: 10px 14px;
+        border-radius: 10px;
+        transition: all 0.3s;
+        color: #64748b;
+      }
+
+      .filter-option:hover {
+        background: #f8fafc;
+        color: #0f172a;
+      }
+
+      .filter-option.active {
+        background: #fffbeb;
+        color: #f59e0b;
+        font-weight: 600;
+      }
+
+      .filter-option input {
+        display: none;
+      }
+
+      .filter-checkbox {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+      }
+
+      .filter-option.active .filter-checkbox {
+        background: #f59e0b;
+        border-color: #f59e0b;
+        color: white;
+      }
+
+      .filter-checkbox i {
+        font-size: 0.75rem;
+        opacity: 0;
+        transition: all 0.3s;
+      }
+
+      .filter-option.active .filter-checkbox i {
+        opacity: 1;
+      }
+
+      .price-range {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .price-input {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      .price-input:focus {
+        outline: none;
+        border-color: #f59e0b;
+      }
+
+      .price-separator {
+        color: #94a3b8;
+      }
+
+      /* Products Grid */
+      .products-main {
+        flex: 1;
+      }
+
+      .products-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        background: white;
+        padding: 20px 30px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .results-count {
+        color: #64748b;
+      }
+
+      .results-count strong {
+        color: #0f172a;
+      }
+
+      .sort-select {
+        padding: 12px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        background: white;
+        cursor: pointer;
+        font-size: 0.9rem;
+        min-width: 200px;
+      }
+
+      .sort-select:focus {
+        outline: none;
+        border-color: #f59e0b;
+      }
+
+      .btn-add-product:hover {
+        background: #d97706 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+      }
+
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+      }
+
+      .product-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s;
+        border: 1px solid #e2e8f0;
+      }
+
+      .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-image {
+        position: relative;
+        height: 280px;
+        overflow: hidden;
+        background: #f8fafc;
+      }
+
+      .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s;
+      }
+
+      .product-card:hover .product-image img {
+        transform: scale(1.1);
+      }
+
+      .product-badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: #f59e0b;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .product-actions-overlay {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        display: flex;
+        gap: 10px;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.3s;
+      }
+
+      .product-card:hover .product-actions-overlay {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .product-action-btn {
+        width: 44px;
+        height: 44px;
+        background: white;
+        border: none;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #64748b;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-action-btn:hover {
+        background: #f59e0b;
+        color: white;
+      }
+
+      .product-info {
+        padding: 24px;
+      }
+
+      .product-category {
+        color: #f59e0b;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+
+      .product-info h3 {
+        font-size: 1.15rem;
+        margin-bottom: 8px;
+        color: #0f172a;
+        line-height: 1.4;
+      }
+
+      .product-description {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 16px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .product-price-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      .product-price {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .product-price span {
+        color: #94a3b8;
+        text-decoration: line-through;
+        font-size: 0.95rem;
+        font-weight: 400;
+        margin-left: 8px;
+      }
+
+      .product-stock {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: #16a34a;
+      }
+
+      .product-stock.low {
+        color: #f59e0b;
+      }
+
+      .product-stock.out {
+        color: #ef4444;
+      }
+
+      .btn-add-cart {
+        width: 100%;
+        padding: 14px;
+        background: #0f172a;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .btn-add-cart:hover {
+        background: #f59e0b;
+      }
+
+      .btn-add-cart:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+      }
+
+      .no-products {
+        text-align: center;
+        padding: 80px 40px;
+        grid-column: span 3;
+      }
+
+      .no-products i {
+        font-size: 5rem;
+        color: #e2e8f0;
+        margin-bottom: 24px;
+      }
+
+      .no-products h3 {
+        color: #0f172a;
+        margin-bottom: 12px;
+      }
+
+      .no-products p {
+        color: #64748b;
+      }
+
+      @media (max-width: 1200px) {
+        .products-grid {
+          grid-template-columns: repeat(2, 1fr);
         }
-        .btn-submit:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.3); }
-
-        /* Products Grid */
-        .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px; }
-        .product-card {
-            background:#fff; border-radius:15px; overflow:hidden;
-            box-shadow:0 4px 15px rgba(0,0,0,0.1);
-            display:flex; flex-direction:column; transition:transform 0.3s ease, box-shadow 0.3s ease;
+        .no-products {
+          grid-column: span 2;
         }
-        .product-card:hover { transform:translateY(-5px); box-shadow:0 8px 25px rgba(0,0,0,0.2); }
-        .product-image { width:100%; height:250px; overflow:hidden; }
-        .product-image img { width:100%; height:100%; object-fit:cover; }
-        .product-info { padding:15px; flex:1; display:flex; flex-direction:column; justify-content:space-between; }
-        .product-title { font-size:18px; margin:10px 0 5px; }
-        .product-category { font-size:12px; color:#888; }
-        .product-price { font-size:16px; font-weight:bold; color:#ff6a00; margin:10px 0; }
-        .add-to-cart-btn {
-            padding:10px 15px; background:#ee0979; color:#fff;
-            border:none; border-radius:50px; cursor:pointer; font-weight:bold;
-            transition:background 0.3s ease;
-        }
-        .add-to-cart-btn:hover { background:#ff6a00; }
+      }
 
-        /* Footer */
-        .footer { background:#222; color:#fff; padding:30px 20px; margin-top:40px; border-radius:10px; text-align:center; }
-        .footer-bottom { font-size:14px; color:#bbb; margin-top:20px; }
+      @media (max-width: 992px) {
+        .products-content {
+          grid-template-columns: 1fr;
+        }
+        .filters-sidebar {
+          position: static;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .products-grid {
+          grid-template-columns: 1fr;
+        }
+        .no-products {
+          grid-column: span 1;
+        }
+        .products-toolbar {
+          flex-direction: column;
+          gap: 16px;
+        }
+      }
     </style>
-</head>
-<body>
-
-<!-- Header -->
-<header class="header">
-    <div class="header-top">Livraison gratuite à partir de 500FCFA | Service client: +33 123 45 67</div>
-    <div class="header-main container">
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="container">
         <a href="/" class="logo">Shop<span>Line</span></a>
-        <div class="search-box">
-            <input type="text" placeholder="Rechercher un produit...">
-            <button><i class="fas fa-search"></i></button>
+
+        <div class="nav-links">
+          <a href="/">Accueil</a>
+          <a href="/products" class="active">Produits</a>
+          <a href="/categories">Catégories</a>
+          <a href="/contact">Contact</a>
         </div>
-        <div class="header-actions">
-            <a href="#"><i class="fas fa-user"></i> Compte</a>
-            <a href="/panier">
-                <i class="fas fa-shopping-cart"></i> Panier
-                <span id="cart-count" class="cart-badge">0</span>
+
+        <div class="nav-actions">
+          <div class="language-selector">
+            <select id="language-select" onchange="changeLanguage(this.value)">
+              <option value="fr">FR</option>
+              <option value="wo">WO</option>
+              <option value="ff">FF</option>
+              <option value="ar">AR</option>
+            </select>
+          </div>
+
+          <a href="/cart" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count" class="cart-count">0</span>
+          </a>
+
+          <div id="user-menu">
+            <a href="/login" class="btn-login">
+              <i class="fas fa-user"></i>
+              <span>Connexion</span>
             </a>
+          </div>
         </div>
-    </div>
-    <nav class="nav container">
-        <ul class="nav-list">
-            <li><a href="/" class="nav-link">Accueil</a></li>
-            <li><a href="/produits" class="nav-link">Produits</a></li>
-            <li><a href="/categories" class="nav-link">Catégories</a></li>
-            <li><a href="/produits/nouveautes" class="nav-link">Nouveautés</a></li>
-            <li><a href="/contact" class="nav-link">Contact</a></li>
-        </ul>
+
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
     </nav>
-</header>
 
-<!-- Breadcrumb -->
-<div class="breadcrumb container">
-    <ul class="breadcrumb-list">
-        <li class="breadcrumb-item"><a href="/">Accueil</a></li>
-        <li class="breadcrumb-separator">/</li>
-        <li class="breadcrumb-item">Produits</li>
-    </ul>
-</div>
+    <!-- Products Page -->
+    <div class="products-page">
+      <div class="products-container">
+        <div class="products-header">
+          <h1 data-translate="our_products">Nos Produits</h1>
+          <p>Découvrez notre collection exclusive</p>
+        </div>
 
-<!-- Section Produits -->
-<div class="container">
-    <!-- Bouton Ajouter Produit -->
-    <div style="text-align:right; margin-bottom:20px;">
-        <a href="/produits/nouveau" class="btn-submit"><i class="fas fa-plus"></i> Ajouter un produit</a>
+        <div class="products-content">
+          <!-- Filters -->
+          <aside class="filters-sidebar">
+            <div class="filter-section">
+              <h4 class="filter-title">
+                <i class="fas fa-tags"></i>
+                Catégories
+              </h4>
+              <div class="filter-options">
+                <label
+                  class="filter-option active"
+                  onclick="filterByCategory('all')"
+                >
+                  <span class="filter-checkbox"
+                    ><i class="fas fa-check"></i
+                  ></span>
+                  <span>Tous les produits</span>
+                </label>
+                <label
+                  class="filter-option"
+                  onclick="filterByCategory('valises')"
+                >
+                  <span class="filter-checkbox"
+                    ><i class="fas fa-check"></i
+                  ></span>
+                  <span>Valises</span>
+                </label>
+                <label
+                  class="filter-option"
+                  onclick="filterByCategory('vetements')"
+                >
+                  <span class="filter-checkbox"
+                    ><i class="fas fa-check"></i
+                  ></span>
+                  <span>Vêtements</span>
+                </label>
+                <label
+                  class="filter-option"
+                  onclick="filterByCategory('chaussures')"
+                >
+                  <span class="filter-checkbox"
+                    ><i class="fas fa-check"></i
+                  ></span>
+                  <span>Chaussures</span>
+                </label>
+                <label
+                  class="filter-option"
+                  onclick="filterByCategory('accessoires')"
+                >
+                  <span class="filter-checkbox"
+                    ><i class="fas fa-check"></i
+                  ></span>
+                  <span>Accessoires</span>
+                </label>
+                <label
+                  class="filter-option"
+                  onclick="filterByCategory('autres')"
+                >
+                  <span class="filter-checkbox"
+                    ><i class="fas fa-check"></i
+                  ></span>
+                  <span>Autres</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="filter-section">
+              <h4 class="filter-title">
+                <i class="fas fa-dollar-sign"></i>
+                Prix
+              </h4>
+              <div class="price-range">
+                <input
+                  type="number"
+                  class="price-input"
+                  placeholder="Min"
+                  id="price-min"
+                />
+                <span class="price-separator">-</span>
+                <input
+                  type="number"
+                  class="price-input"
+                  placeholder="Max"
+                  id="price-max"
+                />
+              </div>
+              <button
+                class="btn-primary"
+                style="width: 100%; margin-top: 16px; padding: 12px"
+                onclick="applyPriceFilter()"
+              >
+                Appliquer
+              </button>
+            </div>
+          </aside>
+
+          <!-- Products -->
+          <div class="products-main">
+            <div class="products-toolbar">
+              <span class="results-count">
+                <strong id="results-count">0</strong> produits trouvés
+              </span>
+              <div style="display: flex; gap: 12px; align-items: center">
+                <a
+                  href="/produits/nouveau"
+                  class="btn-add-product"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 12px 20px;
+                    background: #f59e0b;
+                    color: white;
+                    border-radius: 10px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    transition: all 0.3s;
+                  "
+                >
+                  <i class="fas fa-plus"></i>
+                  Ajouter un produit
+                </a>
+                <select
+                  class="sort-select"
+                  id="sort-select"
+                  onchange="sortProducts(this.value)"
+                >
+                  <option value="name">Trier par nom</option>
+                  <option value="price-asc">Prix: croissant</option>
+                  <option value="price-desc">Prix: décroissant</option>
+                  <option value="newest">Plus récents</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="products-grid" id="products-grid">
+              <!-- Products will be loaded dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Grid Produits -->
-    <div class="products-grid" id="products-grid">
-        <div th:if="${#lists.isEmpty(produits)}">
-            <p>Aucun produit trouvé</p>
-        </div>
-        <div th:each="prod : ${produits}" class="product-card">
-            <div class="product-image">
-                <img th:src="@{${prod.imageUrl}}" th:alt="${prod.name}" />
-            </div>
-            <div class="product-info">
-                <span class="product-category" th:text="${prod.categorie.name}"></span>
-                <h3 class="product-title" th:text="${prod.name}"></h3>
-                <div class="product-price" th:text="${prod.prix + ' FCFA'}"></div>
-                <button class="add-to-cart-btn" th:onclick="'addToCart(' + ${prod.id} + ')'">Ajouter au panier</button>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+      let allProducts = [];
+      let currentCategory = "all";
+      let minPrice = 0;
+      let maxPrice = 0;
 
-<!-- Footer -->
-<footer class="footer">
-    <div class="footer-bottom">&copy; 2026 ShopLine. Tous droits réservés.</div>
-</footer>
-
-<!-- JS Panier -->
-<script>
-    async function getCartFromSession() {
+      // Load products
+      async function loadProducts() {
         try {
-            const res = await fetch('/api/cart');
-            return await res.json();
-        } catch(e) {
-            return { items:[], total:0, itemCount:0 };
+          const response = await fetch("/api/produits");
+          allProducts = await response.json();
+          renderProducts();
+        } catch (error) {
+          console.error("Erreur:", error);
         }
-    }
+      }
 
-    async function addToCart(produitId) {
-        try {
-            const res = await fetch(`/api/cart/add?produitId=${produitId}&quantite=1`, { method:'POST' });
-            const data = await res.json();
-            if(data.success){
-                alert("Produit ajouté au panier !");
-                const countElem = document.getElementById('cart-count');
-                if(countElem) countElem.textContent = data.itemCount || 0;
-            } else {
-                alert("Erreur : " + data.message);
-            }
-        } catch(e){
-            console.error(e);
-            alert("Impossible d'ajouter le produit pour le moment.");
+      // Filter by category
+      function filterByCategory(category) {
+        currentCategory = category;
+
+        document.querySelectorAll(".filter-option").forEach((option) => {
+          option.classList.remove("active");
+        });
+
+        event.currentTarget.classList.add("active");
+
+        renderProducts();
+      }
+
+      // Apply price filter
+      function applyPriceFilter() {
+        minPrice = parseInt(document.getElementById("price-min").value) || 0;
+        maxPrice = parseInt(document.getElementById("price-max").value) || 0;
+        renderProducts();
+      }
+
+      // Sort products
+      function sortProducts(sortBy) {
+        switch (sortBy) {
+          case "price-asc":
+            allProducts.sort((a, b) => a.prix - b.prix);
+            break;
+          case "price-desc":
+            allProducts.sort((a, b) => b.prix - a.prix);
+            break;
+          case "newest":
+            allProducts.sort((a, b) => (b.id || 0) - (a.id || 0));
+            break;
+          default:
+            allProducts.sort((a, b) => a.nom.localeCompare(b.nom));
         }
-    }
+        renderProducts();
+      }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-        const cart = await getCartFromSession();
-        const countElem = document.getElementById('cart-count');
-        if(countElem) countElem.textContent = cart.itemCount || 0;
-    });
-</script>
+      // Render products
+      function renderProducts() {
+        let filtered = [...allProducts];
 
-</body>
+        // Filter by category
+        if (currentCategory !== "all") {
+          filtered = filtered.filter(
+            (p) =>
+              p.categorie &&
+              p.categorie.toLowerCase() === currentCategory.toLowerCase(),
+          );
+        }
+
+        // Filter by price
+        if (minPrice > 0 || maxPrice > 0) {
+          filtered = filtered.filter((p) => {
+            if (minPrice > 0 && p.prix < minPrice) return false;
+            if (maxPrice > 0 && p.prix > maxPrice) return false;
+            return true;
+          });
+        }
+
+        document.getElementById("results-count").textContent = filtered.length;
+
+        const grid = document.getElementById("products-grid");
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Aucun produit trouvé</h3>
+                        <p>Essayez avec d'autres filtres</p>
+                    </div>
+                `;
+          return;
+        }
+
+        grid.innerHTML = filtered
+          .map(
+            (produit) => `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${produit.imageUrl || "/images/valises/valise_rose1.jpeg"}" alt="${produit.nom}">
+                        <span class="product-badge">${produit.categorie || "Nouveau"}</span>
+                        <div class="product-actions-overlay">
+                            <button class="product-action-btn" onclick="viewProduct(${produit.id})" title="Voir">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="product-action-btn" onclick="addToCart(${produit.id})" title="Ajouter au panier">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">${produit.categorie || "Produit"}</span>
+                        <h3>${produit.nom}</h3>
+                        <p class="product-description">${produit.description || "Description du produit..."}</p>
+                        <div class="product-price-row">
+                            <span class="product-price">${produit.prix.toLocaleString("fr-FR")} CFA</span>
+                            <span class="product-stock">
+                                <i class="fas fa-check-circle"></i>
+                                En stock
+                            </span>
+                        </div>
+                        <button class="btn-add-cart" onclick="addToCart(${produit.id})">
+                            <i class="fas fa-cart-plus"></i>
+                            <span data-translate="add_to_cart">Ajouter au panier</span>
+                        </button>
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // Add to cart
+      function addToCart(productId) {
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const existingItem = cart.find((item) => item.id === productId);
+
+        if (existingItem) {
+          existingItem.quantity++;
+        } else {
+          cart.push({ id: productId, quantity: 1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        alert("Produit ajouté au panier!");
+      }
+
+      // View product
+      function viewProduct(productId) {
+        window.location.href = "/product/" + productId;
+      }
+
+      // Update cart count
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cart-count").textContent = count;
+      }
+
+      // Check user login
+      function checkUserLogin() {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        const userMenu = document.getElementById("user-menu");
+
+        if (user) {
+          userMenu.innerHTML = `
+                    <div class="user-dropdown">
+                        <button class="user-btn">
+                            <i class="fas fa-user-circle"></i>
+                            ${user.prenom || user.email}
+                        </button>
+                    </div>
+                `;
+        }
+      }
+
+      // Mobile menu toggle
+      function toggleMobileMenu() {
+        const menu = document.getElementById("mobile-menu");
+        menu.classList.toggle("active");
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        initLanguage();
+        loadProducts();
+        updateCartCount();
+        checkUserLogin();
+
+        // Get category from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get("category");
+        if (category) {
+          filterByCategory(category);
+        }
+      });
+    </script>
+  </body>
 </html>

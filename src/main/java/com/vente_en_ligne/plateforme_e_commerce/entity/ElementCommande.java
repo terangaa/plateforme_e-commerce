@@ -1,50 +1,58 @@
 package com.vente_en_ligne.plateforme_e_commerce.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
 @Entity
+@Table(name = "order_items")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ElementCommande {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "commande_id")
+    private Commande commande;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "produit_id", nullable = false)
     private Produit produit;
 
-    @ManyToOne
-    private Commande commande; // <- Relation avec Commande
+    @Column(name = "quantite", nullable = false)
+    private Integer quantite;
 
-    private int quantite;
+    @Column(name = "prix_unitaire", scale = 2, precision = 10, nullable = false)
     private BigDecimal prixUnitaire;
+
+    @Column(name = "sous_total", scale = 2, precision = 10, nullable = false)
     private BigDecimal sousTotal;
 
-    // Constructeurs
-    public ElementCommande() {}
-
-    public ElementCommande(Produit produit, Commande commande, int quantite, BigDecimal prixUnitaire, BigDecimal sousTotal) {
-        this.produit = produit;
-        this.commande = commande;
-        this.quantite = quantite;
-        this.prixUnitaire = prixUnitaire;
-        this.sousTotal = sousTotal;
+    /**
+     * Calcule automatiquement le sous-total de cet élément.
+     */
+    public void calculerSousTotal() {
+        if (prixUnitaire != null && quantite != null) {
+            this.sousTotal = prixUnitaire.multiply(BigDecimal.valueOf(quantite)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        } else {
+            this.sousTotal = BigDecimal.ZERO;
+        }
     }
 
-    // Getters et Setters
-    public Long getId() { return id; }
-    public Produit getProduit() { return produit; }
-    public void setProduit(Produit produit) { this.produit = produit; }
+    public void setQuantite(Integer quantite) {
+        this.quantite = quantite;
+        calculerSousTotal(); // Met à jour le sous-total à chaque changement de quantité
+    }
 
-    public Commande getCommande() { return commande; }
-    public void setCommande(Commande commande) { this.commande = commande; } // <- setter ajouté
-
-    public int getQuantite() { return quantite; }
-    public void setQuantite(int quantite) { this.quantite = quantite; }
-
-    public BigDecimal getPrixUnitaire() { return prixUnitaire; }
-    public void setPrixUnitaire(BigDecimal prixUnitaire) { this.prixUnitaire = prixUnitaire; }
-
-    public BigDecimal getSousTotal() { return sousTotal; }
-    public void setSousTotal(BigDecimal sousTotal) { this.sousTotal = sousTotal; }
+    public void setPrixUnitaire(BigDecimal prixUnitaire) {
+        this.prixUnitaire = prixUnitaire;
+        calculerSousTotal(); // Met à jour le sous-total à chaque changement de prix
+    }
 }

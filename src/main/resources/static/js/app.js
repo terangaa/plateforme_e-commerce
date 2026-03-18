@@ -644,3 +644,195 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// ========================================
+// Payment Functions (Wave, Orange Money, Free Money)
+// ========================================
+
+let currentOrderId = null;
+
+// Load available payment methods
+async function loadPaymentMethods() {
+    try {
+        const response = await fetch('/api/payment/methods');
+        const methods = await response.json();
+        return methods;
+    } catch (error) {
+        console.error('Erreur chargement méthodes paiement:', error);
+        return [];
+    }
+}
+
+// Render payment methods in the checkout page
+async function renderPaymentMethods(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const methods = await loadPaymentMethods();
+    
+    container.innerHTML = methods.map(method => `
+        <div class="payment-method" data-method="${method.code}">
+            <input type="radio" name="paymentMethod" id="payment-${method.code}" value="${method.code}">
+            <label for="payment-${method.code}">
+                <i class="fas fa-${getPaymentIcon(method.code)}"></i>
+                <span>${method.name}</span>
+                <small>${method.description}</small>
+            </label>
+        </div>
+    `).join('');
+}
+
+// Get icon for payment method
+function getPaymentIcon(methodCode) {
+    const icons = {
+        'WAVE': 'wave-square',
+        'ORANGE_MONEY': 'mobile-alt',
+        'FREE_MONEY': 'phone-alt',
+        'CASH_ON_DELIVERY': 'money-bill-wave'
+    };
+    return icons[methodCode] || 'credit-card';
+}
+
+// Initiate payment
+async function initiatePayment(orderId, paymentMethod, phoneNumber = null) {
+    try {
+        const response = await fetch('/api/payment/initiate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                orderId: orderId,
+                paymentMethod: paymentMethod,
+                phoneNumber: phoneNumber
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // For cash on delivery, redirect to confirmation
+            if (paymentMethod === 'CASH_ON_DELIVERY') {
+                showNotification(t('payment_success') || 'Commande confirmée!');
+                window.location.href = `/confirmation-commande?id=${orderId}`;
+            } else {
+                // For mobile payments, redirect to checkout URL
+                const paymentData = result.payment;
+                if (paymentData.checkout_url) {
+                    window.location.href = paymentData.checkout_url;
+                }
+            }
+            return result;
+        } else {
+            showNotification(result.message || t('payment_failed') || 'Erreur de paiement', 'error');
+            return null;
+        }
+    } catch (error) {
+        console.error('Erreur paiement:', error);
+        showNotification(t('payment_failed') || 'Erreur de paiement', 'error');
+        return null;
+    }
+}
+
+// Show payment modal
+function showPaymentModal(orderId, total) {
+    currentOrderId = orderId;
+    
+    const modal = document.createElement('div');
+    modal.id = 'payment-modal';
+    modal.className = 'payment-modal';
+    modal.innerHTML = `
+        <div class="payment-modal-content">
+            <div class="payment-modal-header">
+                <h2>${t('select_payment') || 'Choisir le mode de paiement'}</h2>
+                <button class="close-modal" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div class="payment-modal-body">
+                <div class="payment-total">
+                    <span>${t('total') || 'Total'}:</span>
+                    <strong>${formatPrice(total)}</strong>
+                </div>
+                <div class="payment-methods" id="payment-methods-list">
+                    <!-- Payment methods will be loaded here -->
+                </div>
+                <div class="payment-phone" id="payment-phone-section" style="display: none;">
+                    <label for="payment-phone">${t('phone') || 'Téléphone'}:</label>
+                    <input type="tel" id="payment-phone" placeholder="77 XXX XX XX">
+                    <small>Numéro Wave/Orange/Free Money</small>
+                </div>
+            </div>
+            <div class="payment-modal-footer">
+                <button class="btn btn-primary" onclick="processPayment()">${t('pay_now') || 'Payer maintenant'}</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Load payment methods
+    renderPaymentMethods('payment-methods-list');
+    
+    // Add event listeners for payment method selection
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const phoneSection = document.getElementById('payment-phone-section');
+            if (this.value !== 'CASH_ON_DELIVERY') {
+                phoneSection.style.display = 'block';
+            } else {
+                phoneSection.style.display = 'none';
+            }
+        });
+    });
+}
+
+// Close payment modal
+function closePaymentModal() {
+    const modal = document.getElementById('payment-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Process payment
+async function processPayment() {
+    const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
+    
+    if (!selectedMethod) {
+        showNotification(t('select_payment') || 'Veuillez sélectionner un mode de paiement', 'error');
+        return;
+    }
+    
+    const phoneNumber = document.getElementById('payment-phone')?.value;
+    const paymentMethod = selectedMethod.value;
+    
+    // Validate phone for mobile payments
+    if (paymentMethod !== 'CASH_ON_DELIVERY' && !phoneNumber) {
+        showNotification('Veuillez entrer votre numéro de téléphone', 'error');
+        return;
+    }
+    
+    await initiatePayment(currentOrderId, paymentMethod, phoneNumber);
+}
+
+// Simulate payment success (for testing)
+async function simulatePaymentSuccess(orderId) {
+    try {
+        const response = await fetch('/api/payment/simulate/success', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderId: orderId })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            showNotification(t('payment_success') || 'Paiement confirmé!');
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Erreur simulation paiement:', error);
+        return false;
+    }
+}

@@ -1,8 +1,12 @@
 package com.vente_en_ligne.plateforme_e_commerce.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,39 +43,42 @@ public class Commande {
     // Relation avec les éléments de la commande
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ElementCommande> elements = new ArrayList<>();
-    private BigDecimal total;
+
+    @Column(name = "total", scale = 2, precision = 10)
+    private BigDecimal total = BigDecimal.ZERO;
 
     /**
-     * Calcul du total de la commande
+     * Calcul le total de la commande à partir des éléments de commande.
      */
-    public BigDecimal getTotal() {
+    public void calculerTotal() {
         if (elements == null || elements.isEmpty()) {
-            return BigDecimal.ZERO;
+            this.total = BigDecimal.ZERO;
+        } else {
+            BigDecimal sommeTotale = BigDecimal.ZERO;
+            for (ElementCommande el : this.elements) {
+                sommeTotale = sommeTotale.add(el.getSousTotal());
+            }
+            this.total = sommeTotale.setScale(2, RoundingMode.HALF_UP);
         }
-        BigDecimal total = BigDecimal.ZERO;
-        for (ElementCommande el : elements) {
-            total = total.add(el.getSousTotal()); // sousTotal est BigDecimal
-        }
-        return total.setScale(2, BigDecimal.ROUND_HALF_UP); // 2 décimales
     }
 
     /**
-     * Ajouter un élément à la commande
+     * Ajoute un élément à la commande.
+     * @param el L'élément de commande à ajouter.
      */
     public void addElement(ElementCommande el) {
-        el.setCommande(this); // assure la relation bidirectionnelle
+        el.setCommande(this); // Assure la relation bidirectionnelle
         elements.add(el);
+        calculerTotal(); // Recalcule le total
     }
 
     /**
-     * Retirer un élément de la commande
+     * Supprime un élément de la commande.
+     * @param el L'élément de commande à retirer.
      */
     public void removeElement(ElementCommande el) {
-        el.setCommande(null); // casse la relation bidirectionnelle
+        el.setCommande(null); // Casse la relation bidirectionnelle
         elements.remove(el);
-    }
-
-    public void setTotal(BigDecimal total) {
-        this.total = total;  // ⚠️ il faut assigner ici
+        calculerTotal(); // Recalcule le total
     }
 }

@@ -1,14 +1,16 @@
 package com.vente_en_ligne.plateforme_e_commerce.service;
 
-import com.vente_en_ligne.plateforme_e_commerce.entity.Commande;
-import com.vente_en_ligne.plateforme_e_commerce.entity.ElementCommande;
-import com.vente_en_ligne.plateforme_e_commerce.entity.Produit;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import com.vente_en_ligne.plateforme_e_commerce.entity.Commande;
+import com.vente_en_ligne.plateforme_e_commerce.entity.ElementCommande;
+import com.vente_en_ligne.plateforme_e_commerce.entity.Produit;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +25,7 @@ public class EmailService {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        helper.setTo("sadikhyade851@gmail.com");
-       // helper.setTo("ceesaysamba24@gmail.com");
+        helper.setTo("ceesaysamba24@gmail.com");
         helper.setSubject("Nouvelle commande reçue : #" + commande.getId());
 
         StringBuilder contenu = new StringBuilder();
@@ -37,7 +38,7 @@ public class EmailService {
 
         for (ElementCommande el : commande.getElements()) {
             Produit p = el.getProduit(); // <- getter correct
-            contenu.append("- Produit: ").append(p.getName())
+            contenu.append("- Produit: ").append(p.getNom())
                     .append(", Quantité: ").append(el.getQuantite())
                     .append(", Prix Unitaire: ").append(el.getPrixUnitaire())
                     .append(", Sous-total: ").append(el.getSousTotal())
@@ -67,7 +68,7 @@ public class EmailService {
 
         for (ElementCommande el : commande.getElements()) {
             Produit p = el.getProduit();
-            contenu.append("- Produit: ").append(p.getName())
+            contenu.append("- Produit: ").append(p.getNom())
                     .append(", Quantité: ").append(el.getQuantite())
                     .append(", Prix Unitaire: ").append(el.getPrixUnitaire())
                     .append(", Sous-total: ").append(el.getSousTotal())
@@ -80,5 +81,35 @@ public class EmailService {
         helper.setText(contenu.toString());
 
         mailSender.send(message);
+    }
+
+    /**
+     * Envoie un email de contact au propriétaire du site
+     */
+    public void envoyerEmailContact(String nom, String email, String sujet, String message) throws MessagingException {
+        System.out.println("=== Début envoi email de contact ===");
+        System.out.println("De: " + email);
+        System.out.println("Nom: " + nom);
+        System.out.println("Sujet: " + sujet);
+
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+        helper.setTo("ceesaysamba24@gmail.com");
+        helper.setSubject("Nouveau message de contact: " + sujet);
+        helper.setReplyTo(email); // Permet de répondre directement à l'expéditeur
+
+        StringBuilder contenu = new StringBuilder();
+        contenu.append("Nouveau message de formulaire de contact\n\n");
+        contenu.append("Nom: ").append(nom).append("\n");
+        contenu.append("Email: ").append(email).append("\n");
+        contenu.append("Sujet: ").append(sujet).append("\n\n");
+        contenu.append("Message:\n").append(message);
+
+        helper.setText(contenu.toString());
+
+        System.out.println("Envoi de l'email...");
+        mailSender.send(mimeMessage);
+        System.out.println("Email de contact envoyé avec succès à ceesaysamba24@gmail.com");
     }
 }

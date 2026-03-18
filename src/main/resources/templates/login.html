@@ -1,0 +1,324 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script th:src="@{/js/i18n.js}"></script>
+    <style>
+      .auth-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 40px 20px;
+        position: relative;
+      }
+
+      .auth-page::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+
+      .auth-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        width: 100%;
+        max-width: 450px;
+        padding: 48px;
+        position: relative;
+        z-index: 1;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      .auth-logo {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .auth-logo a {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+      }
+
+      .auth-logo span {
+        color: #f59e0b;
+      }
+
+      .auth-header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .auth-header h1 {
+        font-size: 1.75rem;
+        margin-bottom: 8px;
+        color: #0f172a;
+      }
+
+      .auth-header p {
+        color: #64748b;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #334155;
+        font-size: 0.9rem;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background: #f8fafc;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #f59e0b;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+      }
+
+      .btn-auth {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 8px;
+      }
+
+      .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+      }
+
+      .auth-divider {
+        display: flex;
+        align-items: center;
+        margin: 24px 0;
+        color: #94a3b8;
+        font-size: 0.875rem;
+      }
+
+      .auth-divider::before,
+      .auth-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e2e8f0;
+      }
+
+      .auth-divider span {
+        padding: 0 16px;
+      }
+
+      .auth-links {
+        text-align: center;
+        margin-top: 24px;
+        color: #64748b;
+      }
+
+      .auth-links a {
+        color: #f59e0b;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .auth-links a:hover {
+        text-decoration: underline;
+      }
+
+      .alert {
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        display: none;
+        font-weight: 500;
+      }
+
+      .alert-error {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+      }
+
+      .alert-success {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+      }
+
+      .back-home {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        color: white;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 2;
+      }
+
+      .back-home:hover {
+        color: #f59e0b;
+      }
+
+      .language-bar {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      .language-bar select {
+        padding: 8px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 50px;
+        background: white;
+        cursor: pointer;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/" class="back-home">
+      <i class="fas fa-arrow-left"></i>
+      Retour au site
+    </a>
+
+    <div class="auth-page">
+      <div class="auth-card">
+        <div class="language-bar">
+          <select id="language-selector" onchange="changeLanguage(this.value)">
+            <option value="fr">Français</option>
+            <option value="wo">Wolof</option>
+            <option value="ff">Poulard</option>
+            <option value="ar">العربية</option>
+          </select>
+        </div>
+
+        <div class="auth-logo">
+          <a href="/" class="logo">Shop<span>Line</span></a>
+        </div>
+
+        <div class="auth-header">
+          <h1 data-translate="login">Connexion</h1>
+          <p>Connectez-vous à votre compte</p>
+        </div>
+
+        <div id="alert-message" class="alert"></div>
+
+        <form id="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="votre@email.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-auth">
+            <i class="fas fa-sign-in-alt"></i>
+            Se connecter
+          </button>
+        </form>
+
+        <div class="auth-links">
+          <p>Pas encore de compte ? <a href="/register">Créer un compte</a></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showAlert(message, type) {
+        const alert = document.getElementById("alert-message");
+        alert.textContent = message;
+        alert.className = "alert alert-" + type;
+        alert.style.display = "block";
+
+        setTimeout(() => {
+          alert.style.display = "none";
+        }, 5000);
+      }
+
+      async function handleLogin(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            localStorage.setItem("user", JSON.stringify(result.user));
+            showAlert("Connexion réussie !", "success");
+
+            setTimeout(() => {
+              window.location.href = "/";
+            }, 1000);
+          } else {
+            showAlert(result.message || "Erreur de connexion", "error");
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showAlert("Erreur de connexion au serveur", "error");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        initLanguage();
+      });
+    </script>
+  </body>
+</html>
