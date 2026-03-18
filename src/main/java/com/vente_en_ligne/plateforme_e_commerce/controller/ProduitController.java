@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-@RequestMapping("/produits")
+@RequestMapping({"/produits", "/products"})
 @RequiredArgsConstructor
 public class ProduitController {
 
@@ -19,16 +19,20 @@ public class ProduitController {
     private final CategorieService categorieService;
     private final StorageService storageService;
 
-    /** Liste tous les produits */
+    /**
+     * Liste tous les produits - /produits et /products
+     */
     @GetMapping
     public String listProduits(Model model) {
         model.addAttribute("produits", produitService.findAll());
-        model.addAttribute("produit", new Produit()); // <-- nécessaire pour le formulaire
-        model.addAttribute("categories", categorieService.findAll()); // <-- nécessaire pour le select
+        model.addAttribute("produit", new Produit()); // nécessaire pour le formulaire
+        model.addAttribute("categories", categorieService.findAll()); // nécessaire pour le select
         return "products"; // nom du template Thymeleaf
     }
 
-    /** Formulaire pour créer un produit */
+    /**
+     * Formulaire pour créer un produit
+     */
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("produit", new Produit());
@@ -51,10 +55,12 @@ public class ProduitController {
         return "products"; // réutilise le même template
     }
 
-    /** Sauvegarder un produit depuis le formulaire */
+    /**
+     * Sauvegarder un produit depuis le formulaire
+     */
     @PostMapping("/save")
     public String saveProduit(@ModelAttribute Produit produit,
-                              @RequestParam("image") MultipartFile image) {
+            @RequestParam("image") MultipartFile image) {
 
         if (!image.isEmpty()) {
             String imageUrl = storageService.storeFile(image); // sauvegarde image
@@ -65,7 +71,9 @@ public class ProduitController {
         return "redirect:/produits";
     }
 
-    /** Formulaire pour modifier un produit */
+    /**
+     * Formulaire pour modifier un produit
+     */
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Produit produit = produitService.findById(id);
@@ -74,7 +82,9 @@ public class ProduitController {
         return "edit-product";
     }
 
-    /** Liste les produits par catégorie */
+    /**
+     * Liste les produits par catégorie
+     */
     @GetMapping("/categorie/{categorieId}")
     public String listProduitsParCategorie(@PathVariable Long categorieId, Model model) {
         // Récupérer les produits de cette catégorie
@@ -89,11 +99,13 @@ public class ProduitController {
         return "products"; // même template que listProduits
     }
 
-    /** Mettre à jour un produit depuis le formulaire */
+    /**
+     * Mettre à jour un produit depuis le formulaire
+     */
     @PostMapping("/update/{id}")
     public String updateProduit(@PathVariable Long id,
-                                @ModelAttribute Produit produit,
-                                @RequestParam("image") MultipartFile image) {
+            @ModelAttribute Produit produit,
+            @RequestParam("image") MultipartFile image) {
 
         if (!image.isEmpty()) {
             String imageUrl = storageService.storeFile(image);
@@ -104,7 +116,9 @@ public class ProduitController {
         return "redirect:/produits";
     }
 
-    /** Supprimer un produit */
+    /**
+     * Supprimer un produit
+     */
     @GetMapping("/delete/{id}")
     public String deleteProduit(@PathVariable Long id) {
         produitService.delete(id);

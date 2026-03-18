@@ -16,26 +16,34 @@ public class ProduitService {
 
     private final ProduitRepository produitRepository;
 
-    /** Retourne tous les produits */
+    /**
+     * Retourne tous les produits
+     */
     public List<Produit> findAll() {
         return produitRepository.findAll();
     }
 
-    /** Retourne un produit par son ID */
+    /**
+     * Retourne un produit par son ID
+     */
     public Produit findById(Long id) {
         return produitRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produit introuvable avec l'id : " + id));
     }
 
-    /** Sauvegarder un produit */
+    /**
+     * Sauvegarder un produit
+     */
     public Produit save(Produit produit) {
         return produitRepository.save(produit);
     }
 
-    /** Mettre à jour un produit */
+    /**
+     * Mettre à jour un produit
+     */
     public Produit update(Long id, Produit produit) {
         Produit existing = findById(id);
-        existing.setName(produit.getName());
+        existing.setNom(produit.getNom());
         existing.setDescription(produit.getDescription());
         existing.setPrix(produit.getPrix());
         existing.setStock(produit.getStock());
@@ -45,7 +53,9 @@ public class ProduitService {
         return produitRepository.save(existing);
     }
 
-    /** Supprimer un produit */
+    /**
+     * Supprimer un produit
+     */
     public void delete(Long id) {
         produitRepository.deleteById(id);
     }
@@ -53,6 +63,7 @@ public class ProduitService {
     public List<Produit> findByCategorie(Long categorieId) {
         return produitRepository.findByCategorieId(categorieId);
     }
+
     public List<Produit> findNouveauxProduits() {
         return produitRepository.findTop10ByOrderByCreatedAtDesc();
     }

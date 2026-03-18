@@ -1,230 +1,709 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détail du Produit - ShopLine</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-top">
-            <div class="container">
-                <span>Livraison gratuite à partir de 50€ | Service client: +33 1 23 45 67 89</span>
-            </div>
-        </div>
-        <div class="header-main">
-            <div class="container">
-                <div class="header-content">
-                    <a href="/" class="logo">Shop<span>Line</span></a>
-                    
-                    <div class="search-box">
-                        <input type="text" placeholder="Rechercher un produit...">
-                        <button type="button"><i class="fas fa-search"></i></button>
-                    </div>
-                    
-                    <div class="header-actions">
-                        <a href="#" class="action-link">
-                            <i class="fas fa-user"></i>
-                            <span>Compte</span>
-                        </a>
-                        <a href="/panier" class="action-link cart-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span>Panier</span>
-                            <span class="cart-badge" id="cart-count">0</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <nav class="nav">
-            <div class="container">
-                <ul class="nav-list">
-                    <li><a href="/" class="nav-link">Accueil</a></li>
-                    <li><a href="/produits" class="nav-link">Produits</a></li>
-                    <li><a href="/produits?categorie=1" class="nav-link">Catégories</a></li>
-                    <li><a href="/produits?nouveau=true" class="nav-link">Nouveautés</a></li>
-                    <li><a href="/contact" class="nav-link">Contact</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Détails du produit - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script th:src="@{/js/i18n.js}"></script>
+    <style>
+      .product-detail-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding-top: 120px;
+        padding-bottom: 60px;
+      }
 
-    <!-- Breadcrumb -->
-    <div class="breadcrumb">
-        <div class="container">
-            <ul class="breadcrumb-list">
-                <li class="breadcrumb-item"><a href="/">Accueil</a></li>
-                <li class="breadcrumb-separator">/</li>
-                <li class="breadcrumb-item"><a href="/produits">Produits</a></li>
-                <li class="breadcrumb-separator">/</li>
-                <li class="breadcrumb-item" id="breadcrumb-product">Détail</li>
-            </ul>
+      .product-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 30px;
+        color: #64748b;
+        font-size: 0.95rem;
+      }
+
+      .breadcrumb a {
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      .breadcrumb a:hover {
+        color: #f59e0b;
+      }
+
+      .breadcrumb span {
+        color: #0f172a;
+        font-weight: 600;
+      }
+
+      .product-detail-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Product Gallery */
+      .product-gallery {
+        position: relative;
+      }
+
+      .main-image {
+        width: 100%;
+        height: 500px;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #f8fafc;
+        margin-bottom: 20px;
+      }
+
+      .main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s;
+      }
+
+      .main-image:hover img {
+        transform: scale(1.05);
+      }
+
+      .thumbnail-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      .thumbnail {
+        width: 100%;
+        height: 100px;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+        background: #f8fafc;
+      }
+
+      .thumbnail:hover,
+      .thumbnail.active {
+        border-color: #f59e0b;
+      }
+
+      .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Product Info */
+      .product-info {
+        padding: 20px 0;
+      }
+
+      .product-category {
+        display: inline-block;
+        background: #fffbeb;
+        color: #f59e0b;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+      }
+
+      .product-title {
+        font-size: 2rem;
+        color: #0f172a;
+        margin-bottom: 20px;
+        line-height: 1.3;
+      }
+
+      .product-price {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 20px;
+      }
+
+      .product-price span {
+        color: #94a3b8;
+        text-decoration: line-through;
+        font-size: 1.25rem;
+        font-weight: 400;
+        margin-left: 12px;
+      }
+
+      .product-description {
+        color: #64748b;
+        line-height: 1.8;
+        margin-bottom: 30px;
+        font-size: 1.05rem;
+      }
+
+      /* Product Options */
+      .product-options {
+        margin-bottom: 30px;
+      }
+
+      .option-group {
+        margin-bottom: 20px;
+      }
+
+      .option-label {
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      .color-options {
+        display: flex;
+        gap: 12px;
+      }
+
+      .color-option {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .color-option:hover,
+      .color-option.active {
+        border-color: #0f172a;
+        transform: scale(1.1);
+      }
+
+      .size-options {
+        display: flex;
+        gap: 10px;
+      }
+
+      .size-option {
+        padding: 10px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+      }
+
+      .size-option:hover,
+      .size-option.active {
+        border-color: #f59e0b;
+        background: #fffbeb;
+        color: #f59e0b;
+      }
+
+      /* Quantity */
+      .quantity-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .quantity-label {
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      .quantity-control {
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 8px;
+      }
+
+      .quantity-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: white;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        font-size: 1.1rem;
+        color: #0f172a;
+      }
+
+      .quantity-btn:hover {
+        background: #f59e0b;
+        color: white;
+      }
+
+      .quantity-value {
+        width: 60px;
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      /* Action Buttons */
+      .product-actions {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 30px;
+      }
+
+      .btn-add-to-cart {
+        flex: 1;
+        padding: 18px 32px;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .btn-add-to-cart:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(245, 158, 11, 0.4);
+      }
+
+      .btn-wishlist {
+        width: 60px;
+        height: 60px;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: #64748b;
+        transition: all 0.3s;
+      }
+
+      .btn-wishlist:hover {
+        border-color: #f59e0b;
+        color: #f59e0b;
+      }
+
+      /* Product Meta */
+      .product-meta {
+        border-top: 1px solid #e2e8f0;
+        padding-top: 24px;
+      }
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        color: #64748b;
+      }
+
+      .meta-item i {
+        color: #f59e0b;
+        width: 20px;
+      }
+
+      /* Stock Status */
+      .stock-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+
+      .stock-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #16a34a;
+      }
+
+      .stock-dot.low {
+        background: #f59e0b;
+      }
+
+      .stock-dot.out {
+        background: #ef4444;
+      }
+
+      .stock-text {
+        font-weight: 500;
+        color: #16a34a;
+      }
+
+      .stock-text.low {
+        color: #f59e0b;
+      }
+
+      .stock-text.out {
+        color: #ef4444;
+      }
+
+      /* Alert */
+      .alert {
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        display: none;
+        font-weight: 500;
+      }
+
+      .alert-success {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+      }
+
+      .alert-error {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+      }
+
+      @media (max-width: 992px) {
+        .product-detail-content {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .main-image {
+          height: 350px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .product-detail-content {
+          padding: 24px;
+        }
+        .product-title {
+          font-size: 1.5rem;
+        }
+        .product-price {
+          font-size: 1.75rem;
+        }
+        .product-actions {
+          flex-direction: column;
+        }
+        .btn-wishlist {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="container">
+        <a href="/" class="logo">Shop<span>Line</span></a>
+
+        <div class="nav-links">
+          <a href="/">Accueil</a>
+          <a href="/products">Produits</a>
+          <a href="/categories">Catégories</a>
+          <a href="/contact">Contact</a>
         </div>
+
+        <div class="nav-actions">
+          <div class="language-selector">
+            <select id="language-select" onchange="changeLanguage(this.value)">
+              <option value="fr">FR</option>
+              <option value="wo">WO</option>
+              <option value="ff">FF</option>
+              <option value="ar">AR</option>
+            </select>
+          </div>
+
+          <a href="/cart" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count" class="cart-count">0</span>
+          </a>
+
+          <div id="user-menu">
+            <a href="/login" class="btn-login">
+              <i class="fas fa-user"></i>
+              <span>Connexion</span>
+            </a>
+          </div>
+        </div>
+
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Product Detail Page -->
+    <div class="product-detail-page">
+      <div class="product-detail-container">
+        <div class="breadcrumb">
+          <a href="/">Accueil</a>
+          <i class="fas fa-chevron-right"></i>
+          <a href="/products">Produits</a>
+          <i class="fas fa-chevron-right"></i>
+          <span id="breadcrumb-product">Produit</span>
+        </div>
+
+        <div id="alert-message" class="alert"></div>
+
+        <div class="product-detail-content">
+          <!-- Gallery -->
+          <div class="product-gallery">
+            <div class="main-image">
+              <img
+                id="main-image"
+                th:src="@{/images/valises/valise_rose1.jpeg}"
+                alt="Product Image"
+              />
+            </div>
+            <div class="thumbnail-grid" id="thumbnail-grid">
+              <div class="thumbnail active">
+                <img
+                  th:src="@{/images/valises/valise_rose1.jpeg}"
+                  alt="Thumbnail 1"
+                />
+              </div>
+              <div class="thumbnail">
+                <img
+                  th:src="@{/images/valises/valise_rose2.jpeg}"
+                  alt="Thumbnail 2"
+                />
+              </div>
+              <div class="thumbnail">
+                <img
+                  th:src="@{/images/valises/valise_bleu1 - Copie.jpeg}"
+                  alt="Thumbnail 3"
+                />
+              </div>
+              <div class="thumbnail">
+                <img
+                  th:src="@{/images/valises/valise_gris1.jpeg}"
+                  alt="Thumbnail 4"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="product-info">
+            <span class="product-category" id="product-category"
+              >Catégorie</span
+            >
+            <h1 class="product-title" id="product-title">Chargement...</h1>
+
+            <div class="product-price" id="product-price">0 CFA</div>
+
+            <div class="stock-status">
+              <span class="stock-dot"></span>
+              <span class="stock-text">En stock</span>
+            </div>
+
+            <p class="product-description" id="product-description">
+              Description du produit en cours de chargement...
+            </p>
+
+            <!-- Quantity -->
+            <div class="quantity-section">
+              <span class="quantity-label">Quantité:</span>
+              <div class="quantity-control">
+                <button class="quantity-btn" onclick="updateQuantity(-1)">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <span class="quantity-value" id="quantity-value">1</span>
+                <button class="quantity-btn" onclick="updateQuantity(1)">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="product-actions">
+              <button class="btn-add-to-cart" onclick="addToCart()">
+                <i class="fas fa-cart-plus"></i>
+                <span data-translate="add_to_cart">Ajouter au panier</span>
+              </button>
+              <button class="btn-wishlist" onclick="addToWishlist()">
+                <i class="far fa-heart"></i>
+              </button>
+            </div>
+
+            <!-- Meta -->
+            <div class="product-meta">
+              <div class="meta-item">
+                <i class="fas fa-shipping-fast"></i>
+                <span>Livraison gratuite à partir de 50 000 CFA</span>
+              </div>
+              <div class="meta-item">
+                <i class="fas fa-undo"></i>
+                <span>Retours gratuits sous 30 jours</span>
+              </div>
+              <div class="meta-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Paiement sécurisé - Wave, Orange Money, Free Money</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Product Detail -->
-    <section class="product-detail" id="product-detail">
-        <div class="container">
-            <div class="product-detail-grid">
-                <!-- Product Images -->
-                <div class="product-gallery">
-                    <div class="main-image">
-                        <i class="fas fa-box" style="font-size: 10rem; color: #ccc;"></i>
-                    </div>
-                    <div class="thumbnail-list">
-                        <div class="thumbnail active">
-                            <i class="fas fa-box" style="font-size: 2rem; color: #ccc;"></i>
-                        </div>
-                        <div class="thumbnail">
-                            <i class="fas fa-box" style="font-size: 2rem; color: #ccc;"></i>
-                        </div>
-                        <div class="thumbnail">
-                            <i class="fas fa-box" style="font-size: 2rem; color: #ccc;"></i>
-                        </div>
-                    </div>
-                </div>
+    <script>
+      let currentProduct = null;
+      let quantity = 1;
 
-                <!-- Product Info -->
-                <div class="product-detail-info">
-                    <span class="product-category" id="product-category">Catégorie</span>
-                    <h1 id="product-name">Chargement...</h1>
-                    
-                    <div class="product-meta">
-                        <span><i class="fas fa-star" style="color: #f39c12;"></i> <span id="product-rating">4.5</span>/5</span>
-                        <span><i class="fas fa-box"></i> <span id="product-stock">En stock</span></span>
-                        <span><i class="fas fa-eye"></i> <span id="product-views">0</span> vues</span>
-                    </div>
+      // Load product
+      async function loadProduct() {
+        const productId = window.location.pathname.split("/").pop();
 
-                    <div class="detail-price">
-                        <span class="current-price" id="product-price">---</span>
-                    </div>
+        try {
+          const response = await fetch("/api/produits/" + productId);
+          const product = await response.json();
 
-                    <p class="product-description" id="product-description">
-                        Veuillez patienter pendant le chargement des informations du produit...
-                    </p>
+          if (product) {
+            currentProduct = product;
+            renderProduct(product);
+          } else {
+            showProductError();
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showProductError();
+        }
+      }
 
-                    <div class="quantity-selector">
-                        <span class="quantity-label">Quantité:</span>
-                        <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="decrementQuantity()">-</button>
-                            <input type="number" class="quantity-value" id="quantity" value="1" min="1">
-                            <button class="quantity-btn" onclick="incrementQuantity()">+</button>
-                        </div>
-                    </div>
+      // Render product
+      function renderProduct(product) {
+        document.getElementById("breadcrumb-product").textContent = product.nom;
+        document.getElementById("product-category").textContent =
+          product.categorie || "Produit";
+        document.getElementById("product-title").textContent = product.nom;
+        document.getElementById("product-price").innerHTML = `
+                ${product.prix.toLocaleString("fr-FR")} CFA
+                ${product.ancienPrix ? "<span>" + product.ancienPrix.toLocaleString("fr-FR") + " CFA</span>" : ""}
+            `;
+        document.getElementById("product-description").textContent =
+          product.description || "Description non disponible";
 
-                    <div class="action-buttons">
-                        <button class="btn btn-primary" id="add-to-cart-btn">Ajouter au panier</button>
-                        <button class="btn btn-secondary">
-                            <i class="fas fa-heart"></i> Wishlist
+        if (product.imageUrl) {
+          document.getElementById("main-image").src = product.imageUrl;
+        }
+      }
+
+      // Show product error
+      function showProductError() {
+        document.getElementById("product-title").textContent =
+          "Produit non trouvé";
+        document.getElementById("product-description").textContent =
+          "Ce produit n'existe pas ou a été supprimé.";
+      }
+
+      // Update quantity
+      function updateQuantity(change) {
+        quantity += change;
+        if (quantity < 1) quantity = 1;
+        if (quantity > 10) quantity = 10;
+        document.getElementById("quantity-value").textContent = quantity;
+      }
+
+      // Add to cart
+      function addToCart() {
+        if (!currentProduct) return;
+
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const existingItem = cart.find((item) => item.id === currentProduct.id);
+
+        if (existingItem) {
+          existingItem.quantity += quantity;
+        } else {
+          cart.push({ id: currentProduct.id, quantity: quantity });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        showAlert("Produit ajouté au panier!", "success");
+      }
+
+      // Add to wishlist
+      function addToWishlist() {
+        showAlert("Ajouté à la liste de souhaits!", "success");
+      }
+
+      // Show alert
+      function showAlert(message, type) {
+        const alert = document.getElementById("alert-message");
+        alert.textContent = message;
+        alert.className = "alert alert-" + type;
+        alert.style.display = "block";
+
+        setTimeout(() => {
+          alert.style.display = "none";
+        }, 3000);
+      }
+
+      // Update cart count
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cart-count").textContent = count;
+      }
+
+      // Check user login
+      function checkUserLogin() {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        const userMenu = document.getElementById("user-menu");
+
+        if (user) {
+          userMenu.innerHTML = `
+                    <div class="user-dropdown">
+                        <button class="user-btn">
+                            <i class="fas fa-user-circle"></i>
+                            ${user.prenom || user.email}
                         </button>
                     </div>
-
-                    <div class="product-features">
-                        <div class="feature-item">
-                            <i class="fas fa-truck"></i>
-                            <span>Livraison gratuite à partir de 50€</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Garantie 2 ans</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-undo"></i>
-                            <span>Retours sous 30 jours</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-headset"></i>
-                            <span>Support client 24/7</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Related Products -->
-    <section class="products" style="padding-top: 0;">
-        <div class="container">
-            <div class="section-title">
-                <h2>Produits Similaires</h2>
-                <p>Vous aimerez aussi ces produits</p>
-            </div>
-            <div class="products-grid" id="related-products">
-                <!-- Related products will be loaded dynamically -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>ShopLine</h3>
-                    <p style="color: rgba(255,255,255,0.7);">Votre plateforme e-commerce de confiance pour tous vos achats en ligne.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Liens Rapides</h3>
-                    <ul>
-                        <li><a href="/produits">Produits</a></li>
-                        <li><a href="/produits?nouveau=true">Nouveautés</a></li>
-                        <li><a href="/contact">Contact</a></li>
-                        <li><a href="/a propos">À propos</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Service Client</h3>
-                    <ul>
-                        <li><a href="/faq">FAQ</a></li>
-                        <li><a href="/livraison">Livraison</a></li>
-                        <li><a href="/retours">Retours</a></li>
-                        <li><a href="/conditions">CGV</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contactez-nous</h3>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> contact@shopline.fr</li>
-                        <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Paris, France</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 ShopLine. Tous droits réservés.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script th:src="@{/js/app.js}"></script>
-    <script>
-        // Get product ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get('id');
-
-        function incrementQuantity() {
-            const input = document.getElementById('quantity');
-            input.value = parseInt(input.value) + 1;
+                `;
         }
+      }
 
-        function decrementQuantity() {
-            const input = document.getElementById('quantity');
-            if (parseInt(input.value) > 1) {
-                input.value = parseInt(input.value) - 1;
-            }
-        }
+      // Mobile menu toggle
+      function toggleMobileMenu() {
+        const menu = document.getElementById("mobile-menu");
+        menu.classList.toggle("active");
+      }
 
-        // Load product detail on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCartFromSession();
-            
-            if (productId) {
-                loadProductDetail(parseInt(productId));
-            }
-        });
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        initLanguage();
+        loadProduct();
+        updateCartCount();
+        checkUserLogin();
+      });
     </script>
-</body>
+  </body>
 </html>

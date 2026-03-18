@@ -32,41 +32,41 @@ public class CartService {
         if (quantite == null || quantite <= 0) {
             quantite = 1;
         }
-        
+
         // Vérifier si le produit existe
         Optional<Produit> produitOpt = produitRepository.findById(produitId);
         if (produitOpt.isEmpty()) {
             throw new IllegalArgumentException("Produit non trouvé");
         }
-        
+
         Produit produit = produitOpt.get();
-        
+
         // Vérifier le stock
         if (produit.getStock() != null && produit.getStock() < quantite) {
             throw new IllegalArgumentException("Stock insuffisant pour ce produit");
         }
-        
+
         // Vérifier si le produit est déjà dans le panier
         Optional<CartItemDTO> existingItem = cartItems.stream()
                 .filter(item -> item.getProduitId().equals(produitId))
                 .findFirst();
-        
+
         if (existingItem.isPresent()) {
             // Mettre à jour la quantité
             CartItemDTO item = existingItem.get();
             int nouvelleQuantite = item.getQuantite() + quantite;
-            
+
             if (produit.getStock() != null && produit.getStock() < nouvelleQuantite) {
                 throw new IllegalArgumentException("Stock insuffisant pour cette quantité");
             }
-            
+
             item.setQuantite(nouvelleQuantite);
             return item;
         } else {
             // Ajouter un nouveau produit
             CartItemDTO newItem = new CartItemDTO(
                     produit.getId(),
-                    produit.getName(),
+                    produit.getNom(),
                     produit.getPrix(),
                     produit.getImageUrl()
             );
@@ -84,7 +84,7 @@ public class CartService {
         if (quantite == null || quantite <= 0) {
             return removeFromCart(produitId);
         }
-        
+
         // Vérifier le stock
         Optional<Produit> produitOpt = produitRepository.findById(produitId);
         if (produitOpt.isPresent()) {
@@ -93,15 +93,15 @@ public class CartService {
                 throw new IllegalArgumentException("Stock insuffisant pour cette quantité");
             }
         }
-        
+
         Optional<CartItemDTO> itemOpt = cartItems.stream()
                 .filter(item -> item.getProduitId().equals(produitId))
                 .findFirst();
-        
+
         if (itemOpt.isEmpty()) {
             throw new IllegalArgumentException("Produit non trouvé dans le panier");
         }
-        
+
         CartItemDTO item = itemOpt.get();
         item.setQuantite(quantite);
         return item;
@@ -115,11 +115,11 @@ public class CartService {
         Optional<CartItemDTO> itemOpt = cartItems.stream()
                 .filter(item -> item.getProduitId().equals(produitId))
                 .findFirst();
-        
+
         if (itemOpt.isEmpty()) {
             throw new IllegalArgumentException("Produit non trouvé dans le panier");
         }
-        
+
         CartItemDTO removedItem = itemOpt.get();
         cartItems.remove(removedItem);
         return removedItem;

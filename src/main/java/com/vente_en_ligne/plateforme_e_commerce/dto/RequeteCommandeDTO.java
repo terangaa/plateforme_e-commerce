@@ -1,13 +1,14 @@
 package com.vente_en_ligne.plateforme_e_commerce.dto;
 
+import java.util.List;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.util.List;
 
 /**
  * DTO pour recevoir les données d'une commande
@@ -16,21 +17,32 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequeteCommandeDTO {
-    
+
+    // Champs envoyés par le frontend (payment.html)
+    private Long clientId;
+
     @NotBlank(message = "Le nom du client est requis")
-    private String nomClient;
-    
+    private String clientNom;
+
+    private String clientPrenom;
+
     @NotBlank(message = "L'email du client est requis")
     @Email(message = "L'email doit être valide")
-    private String emailClient;
-    
+    private String clientEmail;
+
     @NotBlank(message = "Le téléphone du client est requis")
-    private String telephoneClient;
-    
+    private String clientTelephone;
+
     @NotBlank(message = "L'adresse du client est requise")
-    private String adresseClient;
-    
+    private String adresse;
+
+    private String ville;
+
+    private String codePostal;
+
+    private String modePaiement;
+
     @NotEmpty(message = "La commande doit contenir au moins un produit")
     @Valid
-    private List<ElementCommandeDTO> elements;
+    private List<ElementCommandeDTO> produits;
 }

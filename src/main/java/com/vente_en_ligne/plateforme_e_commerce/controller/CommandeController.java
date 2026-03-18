@@ -32,18 +32,8 @@ public class CommandeController {
         return ResponseEntity.ok(commandeService.obtenirToutesLesCommandes());
     }
 
-    // Obtenir commande par ID
-    @GetMapping("/commande/{id}")
-    public ResponseEntity<Commande> obtenirCommandeParId(@PathVariable Long id) {
-        Commande commande = commandeService.obtenirCommandeParId(id);
-        if (commande == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(commande);
-    }
-
-    // Créer une nouvelle commande
-    @PostMapping("/commande")
+    // Créer une nouvelle commande (endpoint plural pour compatibilité frontend)
+    @PostMapping("/commandes")
     public ResponseEntity<?> creerCommande(@Valid @RequestBody RequeteCommandeDTO req) {
         Commande cree;
 
@@ -71,6 +61,22 @@ public class CommandeController {
         res.put("orderId", cree.getId());
 
         return ResponseEntity.ok(res);
+    }
+
+    // Obtenir commande par ID
+    @GetMapping("/commande/{id}")
+    public ResponseEntity<Commande> obtenirCommandeParId(@PathVariable Long id) {
+        Commande commande = commandeService.obtenirCommandeParId(id);
+        if (commande == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(commande);
+    }
+
+    // Créer une nouvelle commande (endpoint singular)
+    @PostMapping("/commande")
+    public ResponseEntity<?> creerCommandeSingular(@Valid @RequestBody RequeteCommandeDTO req) {
+        return creerCommande(req);
     }
 
     // Mettre à jour le statut d’une commande

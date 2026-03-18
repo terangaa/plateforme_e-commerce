@@ -1,169 +1,327 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmation de Commande - ShopLine</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-top">
-            <div class="container">
-                <span>Livraison gratuite à partir de 500FCFA | Service client: +33 123 45 67</span>
-            </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Commande confirmée - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script th:src="@{/js/i18n.js}"></script>
+    <style>
+      .confirmation-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 40px 20px;
+      }
+
+      .confirmation-card {
+        background: white;
+        border-radius: 24px;
+        padding: 60px 50px;
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .success-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+        animation: pulse 0.6s ease-out;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(0);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .success-icon i {
+        font-size: 3rem;
+        color: #16a34a;
+      }
+
+      .confirmation-card h1 {
+        font-size: 2rem;
+        color: #0f172a;
+        margin-bottom: 16px;
+      }
+
+      .confirmation-card > p {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+        line-height: 1.7;
+      }
+
+      .order-details {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        text-align: left;
+      }
+
+      .order-detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 14px 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .order-detail-row:last-child {
+        border-bottom: none;
+      }
+
+      .order-detail-row span:first-child {
+        color: #64748b;
+      }
+
+      .order-detail-row span:last-child {
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      .order-total {
+        font-size: 1.25rem;
+        color: #0f172a;
+      }
+
+      .order-total span:last-child {
+        color: #f59e0b;
+        font-size: 1.5rem;
+      }
+
+      .confirmation-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+      }
+
+      .btn-home {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 32px;
+        background: #0f172a;
+        color: white;
+        border-radius: 14px;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .btn-home:hover {
+        background: #f59e0b;
+        transform: translateY(-3px);
+      }
+
+      .btn-orders {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 32px;
+        background: white;
+        color: #0f172a;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .btn-orders:hover {
+        border-color: #f59e0b;
+        color: #f59e0b;
+      }
+
+      .support-info {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 1px solid #e2e8f0;
+        color: #64748b;
+        font-size: 0.95rem;
+      }
+
+      .support-info i {
+        color: #f59e0b;
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="container">
+        <a href="/" class="logo">Shop<span>Line</span></a>
+
+        <div class="nav-links">
+          <a href="/">Accueil</a>
+          <a href="/products">Produits</a>
+          <a href="/categories">Catégories</a>
+          <a href="/contact">Contact</a>
         </div>
-        <div class="header-main">
-            <div class="container">
-                <div class="header-content">
-                    <a href="/" class="logo">Shop<span>Line</span></a>
-                    
-                    <div class="search-box">
-                        <input type="text" placeholder="Rechercher un produit...">
-                        <button type="button"><i class="fas fa-search"></i></button>
-                    </div>
-                    
-                    <div class="header-actions">
-                        <a href="#" class="action-link">
-                            <i class="fas fa-user"></i>
-                            <span>Compte</span>
-                        </a>
-                        <a href="/panier" class="action-link cart-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span>Panier</span>
-                            <span class="cart-badge" id="cart-count">0</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+
+        <div class="nav-actions">
+          <div class="language-selector">
+            <select id="language-select" onchange="changeLanguage(this.value)">
+              <option value="fr">FR</option>
+              <option value="wo">WO</option>
+              <option value="ff">FF</option>
+              <option value="ar">AR</option>
+            </select>
+          </div>
+
+          <a href="/cart" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count" class="cart-count">0</span>
+          </a>
+
+          <div id="user-menu">
+            <a href="/login" class="btn-login">
+              <i class="fas fa-user"></i>
+              <span>Connexion</span>
+            </a>
+          </div>
         </div>
-        <nav class="nav">
-            <div class="container">
-                <ul class="nav-list">
-                    <li><a href="/" class="nav-link">Accueil</a></li>
-                    <li><a href="/produits" class="nav-link">Produits</a></li>
-                    <li><a href="/produits?categorie=1" class="nav-link">Catégories</a></li>
-                    <li><a href="/produits?nouveau=true" class="nav-link">Nouveautés</a></li>
-                    <li><a href="/contact" class="nav-link">Contact</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </nav>
 
     <!-- Confirmation Page -->
-    <section class="confirmation-page">
-        <div class="container">
-            <div class="confirmation-icon">
-                <i class="fas fa-check"></i>
-            </div>
-            
-            <h1>Merci pour votre commande !</h1>
-            <p>Votre commande a été passée avec succès.</p>
-            
-            <div class="order-number">
-                Commande #<span id="order-id">---</span>
-            </div>
-            
-            <p>Un email de confirmation a été envoyé à votre adresse email.</p>
-            
-            <div class="order-details">
-                <h3>Détails de la commande</h3>
-                <div class="order-detail-row">
-                    <span>Date</span>
-                    <span id="order-date">---</span>
-                </div>
-                <div class="order-detail-row">
-                    <span>Statut</span>
-                    <span style="color: #27ae60; font-weight: 600;">En attente de traitement</span>
-                </div>
-                <div class="order-detail-row">
-                    <span>Mode de paiement</span>
-                    <span>À la livraison</span>
-                </div>
-                <div class="order-detail-row">
-                    <span>Mode de livraison</span>
-                    <span>Standard</span>
-                </div>
-                <div class="order-detail-row">
-                    <span>Total</span>
-                    <span id="order-total" style="font-weight: 700; color: #2c3e50;">---</span>
-                </div>
-            </div>
-            
-            <div class="confirmation-actions">
-                <a href="/produits" class="btn btn-primary">Continuer vos achats</a>
-                <a href="/" class="btn btn-secondary">Retour à l'accueil</a>
-            </div>
+    <div class="confirmation-page">
+      <div class="confirmation-card">
+        <div class="success-icon">
+          <i class="fas fa-check"></i>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>ShopLine</h3>
-                    <p style="color: rgba(255,255,255,0.7);">Votre plateforme e-commerce de confiance.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Liens Rapides</h3>
-                    <ul>
-                        <li><a href="/produits">Produits</a></li>
-                        <li><a href="/contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Service Client</h3>
-                    <ul>
-                        <li><a href="/faq">FAQ</a></li>
-                        <li><a href="/livraison">Livraison</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contactez-nous</h3>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> contact@shopline.fr</li>
-                        <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 ShopLine. Tous droits réservés.</p>
-            </div>
+        <h1>Commande confirmée !</h1>
+        <p>
+          Merci pour votre commande. Nous avons envoyé un email de confirmation
+          à votre adresse. Le propriétaire de la boutique va recevoir votre
+          commande et vous contactera bientôt.
+        </p>
+
+        <div class="order-details">
+          <div class="order-detail-row">
+            <span>Numéro de commande</span>
+            <span id="order-id">#CMD-0000</span>
+          </div>
+          <div class="order-detail-row">
+            <span>Date</span>
+            <span id="order-date">-</span>
+          </div>
+          <div class="order-detail-row">
+            <span>Mode de paiement</span>
+            <span id="payment-method">-</span>
+          </div>
+          <div class="order-detail-row">
+            <span>Statut</span>
+            <span style="color: #16a34a; font-weight: 600"
+              >En attente de traitement</span
+            >
+          </div>
+          <div class="order-detail-row order-total">
+            <span>Total</span>
+            <span id="order-total">0 CFA</span>
+          </div>
         </div>
-    </footer>
 
-    <script th:src="@{/js/app.js}"></script>
+        <div class="confirmation-actions">
+          <a href="/" class="btn-home">
+            <i class="fas fa-home"></i>
+            Retour à l'accueil
+          </a>
+          <a href="/products" class="btn-orders">
+            <i class="fas fa-shopping-bag"></i>
+            Continuer mes achats
+          </a>
+        </div>
+
+        <div class="support-info">
+          <p>
+            <i class="fas fa-envelope"></i>
+            Questions ?Contactez-nous à: ceesaysamba24@gmail.com
+          </p>
+        </div>
+      </div>
+    </div>
+
     <script>
-        // Get order ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get('id');
+      // Get order ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId =
+        urlParams.get("orderId") || "CMD-" + Math.floor(Math.random() * 10000);
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Update order details
-            document.getElementById('order-id').textContent = orderId || '---';
-            
-            // Set current date
-            const today = new Date();
-            const dateStr = today.toLocaleDateString('fr-FR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            document.getElementById('order-date').textContent = dateStr;
-            
-            // Get total from localStorage (set by JavaScript before redirect)
-            const orderTotal = localStorage.getItem('lastOrderTotal');
-            if (orderTotal) {
-                document.getElementById('order-total').textContent = orderTotal;
-                localStorage.removeItem('lastOrderTotal');
-            }
-            
-            // Reset cart
-            updateCartUI();
-        });
+      document.getElementById("order-id").textContent = "#" + orderId;
+
+      // Set current date
+      const today = new Date();
+      const dateStr = today.toLocaleDateString("fr-FR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      document.getElementById("order-date").textContent = dateStr;
+
+      // Get cart total
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      // For now, show placeholder - in real app would fetch from API
+      document.getElementById("order-total").textContent =
+        "Voir email de confirmation";
+
+      // Clear cart after successful order
+      localStorage.removeItem("cart");
+
+      // Update cart count
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cart-count").textContent = count;
+      }
+
+      // Mobile menu toggle
+      function toggleMobileMenu() {
+        const menu = document.getElementById("mobile-menu");
+        menu.classList.toggle("active");
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        initLanguage();
+        updateCartCount();
+      });
     </script>
-</body>
+  </body>
 </html>
