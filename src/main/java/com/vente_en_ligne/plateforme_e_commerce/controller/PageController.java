@@ -1,7 +1,9 @@
 package com.vente_en_ligne.plateforme_e_commerce.controller;
 
 import com.vente_en_ligne.plateforme_e_commerce.entity.Commande;
+import com.vente_en_ligne.plateforme_e_commerce.entity.Produit;
 import com.vente_en_ligne.plateforme_e_commerce.service.CommandeService;
+import com.vente_en_ligne.plateforme_e_commerce.service.ProduitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PageController {
 
     private final CommandeService commandeService;
+    private final ProduitService produitService;
 
     // Pages principales
     @GetMapping("/")
@@ -57,10 +60,30 @@ public class PageController {
         return payment(orderId, model);
     }
 
+    @GetMapping("/products")
+    public String products() {
+        return "products";
+    }
+
+    @GetMapping("/admin")
+    public String adminPage() {
+        return "admin";
+    }
+
+//    @GetMapping("/admin")
+//    public String adminDashboard() {
+//        return "admin-products";
+//    }
+
+
     // Page détail produit
     @GetMapping("/product/{id}")
     public String productDetail(@PathVariable Long id, Model model) {
-        model.addAttribute("productId", id);
+        Produit produit = produitService.getProduitById(id); // récupérer depuis la base
+        if (produit == null) {
+            return "redirect:/products"; // ou afficher une page 404 custom
+        }
+        model.addAttribute("produit", produit); // clé "produit" pour Thymeleaf
         return "product-detail";
     }
 

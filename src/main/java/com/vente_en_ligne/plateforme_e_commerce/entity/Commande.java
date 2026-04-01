@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "commande")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,6 +46,9 @@ public class Commande {
 
     @Column(name = "total", scale = 2, precision = 10)
     private BigDecimal total = BigDecimal.ZERO;
+
+    @Enumerated(EnumType.STRING)
+    private StatutPaiement statutPaiement = StatutPaiement.NON_PAYEE;
 
     /**
      * Calcul le total de la commande à partir des éléments de commande.

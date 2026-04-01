@@ -1,5 +1,6 @@
 package com.vente_en_ligne.plateforme_e_commerce.dto;
 
+import com.vente_en_ligne.plateforme_e_commerce.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,6 @@ public class RegisterRequest {
     private String ville;
     private String codePostal;
     private String pays;
+    private Role role;
+
 }

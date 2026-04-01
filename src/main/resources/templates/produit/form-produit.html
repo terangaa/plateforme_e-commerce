@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${produit.id} != null ? 'Modifier Produit' : 'Ajouter Produit'">Produit</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1 th:text="${produit.id} != null ? 'Modifier Produit' : 'Ajouter Produit'">Formulaire</h1>
+<form th:action="@{${produit.id} != null ? '/admin/produits/modifier/' + ${produit.id} : '/admin/produits/ajouter'}" method="post">
+    <label>Nom :</label>
+    <input type="text" name="nom" th:value="${produit.nom}" required><br><br>
+
+    <label>Prix :</label>
+    <input type="number" name="prix" step="0.01" th:value="${produit.prix}" required><br><br>
+
+    <label>Stock :</label>
+    <input type="number" name="stock" th:value="${produit.stock}" required><br><br>
+
+    <label>Description :</label><br>
+    <textarea name="description" rows="3" th:text="${produit.description}"></textarea><br><br>
+
+    <button type="submit" th:text="${produit.id} != null ? 'Modifier' : 'Ajouter'">Ajouter</button>
+</form>
+<a th:href="@{/admin/dashboard}">Retour au dashboard</a>
+</body>
+</html>

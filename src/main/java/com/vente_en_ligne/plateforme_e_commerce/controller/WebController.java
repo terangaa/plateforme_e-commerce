@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.vente_en_ligne.plateforme_e_commerce.entity.Produit;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,33 +35,18 @@ public class WebController {
     public ResponseEntity<?> accueil() {
         return ResponseEntity.ok(java.util.Map.of(
                 "categories", categorieService.obtenirToutesLesCategories(),
-                "produits", produitService.findAll()
+                "produits", produitService.getAllProduits()
         ));
     }
 
     @GetMapping("/produits")
-    public ResponseEntity<?> getProduits() {
-        List<Map<String, Object>> produits = produitService.findAll().stream()
-                .map(p -> {
-                    Map<String, Object> produitMap = new java.util.HashMap<>();
-                    produitMap.put("id", p.getId());
-                    produitMap.put("nom", p.getNom());
-                    produitMap.put("description", p.getDescription());
-                    produitMap.put("prix", p.getPrix());
-                    produitMap.put("stock", p.getStock());
-                    produitMap.put("imageUrl", p.getImageUrl());
-                    produitMap.put("actif", p.getActif());
-                    if (p.getCategorie() != null) {
-                        produitMap.put("categorie", p.getCategorie().getName());
-                    } else {
-                        produitMap.put("categorie", null);
-                    }
-                    return produitMap;
-                })
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(produits);
+    public String listProduits(Model model) {
+        // Ancien : List<Produit> produits = produitService.findAll();
+        // Nouveau :
+        List<Produit> produits = produitService.getAllProduits();
+        model.addAttribute("produits", produits);
+        return "web/list-produits";
     }
-
     @PostMapping("/contact")
     public ResponseEntity<?> soumettreContact(@RequestBody Map<String, String> contactData) {
         try {

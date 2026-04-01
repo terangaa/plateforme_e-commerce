@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - ShopLine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: #f1f5f9;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab-btn:hover {
+            background: #e2e8f0;
+        }
+        
+        .tab-btn.active {
+            background: white;
+            color: #f59e0b;
+            border-bottom: 3px solid #f59e0b;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Users Table Styles */
+        .users-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .user-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .user-status.active {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .user-status.inactive {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .role-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .role-badge.admin {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .role-badge.client {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        
+        .role-badge.proprietaire {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.8rem;
+        }
+
+        .sidebar-header h2 span {
+            color: #f59e0b;
+        }
+
+        .sidebar-header p {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-menu-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .sidebar-menu-item:hover, .sidebar-menu-item.active {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border-left: 3px solid #f59e0b;
+        }
+
+        .sidebar-menu-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+        }
+
+        /* Header */
+        .top-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: #0f172a;
+            margin-bottom: 5px;
+        }
+
+        .page-title p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .admin-details h4 {
+            color: #0f172a;
+            margin-bottom: 3px;
+        }
+
+        .admin-details p {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            color: #0f172a;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        /* Products Section */
+        .products-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: #0f172a;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Search Bar */
+        .search-bar {
+            margin-bottom: 25px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+
+        /* Products Table */
+        .products-table-container {
+            overflow-x: auto;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .products-table th {
+            text-align: left;
+            padding: 15px;
+            background: #f8fafc;
+            color: #0f172a;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .products-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+
+        .products-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: #0f172a;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-footer {
+            padding: 25px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .btn-save, .btn-cancel {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-cancel:hover {
+            background: #cbd5e1;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        .toast.success i {
+            color: #10b981;
+        }
+
+        .toast.error i {
+            color: #ef4444;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #64748b;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+            }
+            .sidebar-header h2, .sidebar-header p, .sidebar-menu-item span {
+                display: none;
+            }
+            .sidebar-menu-item {
+                justify-content: center;
+                padding: 15px;
+            }
+            .sidebar-menu-item i {
+                font-size: 1.5rem;
+            }
+            .main-content {
+                margin-left: 80px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .section-header {
+                flex-direction: column;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>Shop<span>Line</span></h2>
+        <p>Administration Panel</p>
+    </div>
+    <div class="sidebar-menu">
+        <div class="sidebar-menu-item active" onclick="switchTab('products')">
+            <i class="fas fa-box"></i>
+            <span>Produits</span>
+        </div>
+        <div class="sidebar-menu-item" onclick="switchTab('users')">
+            <i class="fas fa-users"></i>
+            <span>Utilisateurs</span>
+        </div>
+        <div class="sidebar-menu-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Commandes</span>
+        </div>
+        <div class="sidebar-menu-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Statistiques</span>
+        </div>
+        <div class="sidebar-menu-item">
+            <i class="fas fa-tags"></i>
+            <span>Catégories</span>
+        </div>
+        <div class="sidebar-menu-item">
+            <i class="fas fa-cog"></i>
+            <span>Paramètres</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="page-title">
+            <h1>Gestion des Produits</h1>
+            <p>Ajoutez, modifiez ou supprimez vos produits</p>
+        </div>
+        <div class="admin-info">
+            <div class="admin-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="admin-details">
+                <h4 id="admin-name">Administrateur</h4>
+                <p id="admin-email">admin@shopline.com</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Déconnexion
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="total-products">0</h3>
+                <p>Total Produits</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-box"></i>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="total-categories">0</h3>
+                <p>Catégories</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-tags"></i>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="stock-value">0</h3>
+                <p>Valeur Stock (CFA)</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="low-stock">0</h3>
+                <p>Stock Faible</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+        <button class="tab-btn active" onclick="switchTab('products')">
+            <i class="fas fa-box"></i> Produits
+        </button>
+        <button class="tab-btn" onclick="switchTab('users')">
+            <i class="fas fa-users"></i> Utilisateurs
+        </button>
+    </div>
+
+    <!-- Products Section -->
+    <div id="products-tab" class="tab-content active">
+    <div class="products-section">
+        <div class="section-header">
+            <h2><i class="fas fa-list"></i> Liste des Produits</h2>
+            <button class="btn-add" onclick="openAddModal()">
+                <i class="fas fa-plus"></i>
+                Ajouter un produit
+            </button>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Rechercher un produit..." onkeyup="searchProducts()">
+        </div>
+
+        <div class="products-table-container">
+            <table class="products-table">
+                <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Nom</th>
+                    <th>Catégorie</th>
+                    <th>Prix (CFA)</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="products-table-body">
+                <tr>
+                    <td colspan="6" class="loading">
+                        <i class="fas fa-spinner"></i> Chargement...
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    <!-- Users Section -->
+    <div id="users-tab" class="tab-content">
+    <div class="users-section">
+        <div class="section-header">
+            <h2><i class="fas fa-users"></i> Liste des Utilisateurs</h2>
+            <button class="btn-add" onclick="openUserAddModal()">
+                <i class="fas fa-plus"></i>
+                Ajouter un utilisateur
+            </button>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="user-search-input" placeholder="Rechercher un utilisateur..." onkeyup="searchUsers()">
+        </div>
+
+        <div class="products-table-container">
+            <table class="products-table">
+                <thead>
+                <tr>
+                    <th>Nom Complet</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Rôle</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="users-table-body">
+                <tr>
+                    <td colspan="6" class="loading">
+                        <i class="fas fa-spinner"></i> Chargement...
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- Add/Edit Product Modal -->
+<div id="product-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">Ajouter un produit</h3>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label>Nom du produit *</label>
+                    <input type="text" id="product-nom" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="product-description" placeholder="Description du produit..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Prix (CFA) *</label>
+                    <input type="number" id="product-prix" required>
+                </div>
+                <div class="form-group">
+                    <label>Quantité en stock *</label>
+                    <input type="number" id="product-quantite" required>
+                </div>
+                <div class="form-group">
+                    <label>Catégorie *</label>
+                    <select id="product-categorie" required>
+                        <option value="">Sélectionner une catégorie</option>
+                        <option value="Valises">Valises</option>
+                        <option value="Vêtements">Vêtements</option>
+                        <option value="Chaussures">Chaussures</option>
+                        <option value="Accessoires">Accessoires</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>URL de l'image</label>
+                    <input type="text" id="product-imageUrl" placeholder="https://exemple.com/image.jpg">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+            <button class="btn-save" onclick="saveProduct()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit User Modal -->
+<div id="user-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="user-modal-title">Ajouter un utilisateur</h3>
+            <button class="close-modal" onclick="closeUserModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="user-form">
+                <input type="hidden" id="user-id">
+                <div class="form-group">
+                    <label>Nom *</label>
+                    <input type="text" id="user-nom" required>
+                </div>
+                <div class="form-group">
+                    <label>Prénom *</label>
+                    <input type="text" id="user-prenom" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="user-email" required>
+                </div>
+                <div class="form-group" id="password-group">
+                    <label>Mot de passe <span id="password-required">*</span></label>
+                    <input type="password" id="user-password">
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="user-telephone">
+                </div>
+                <div class="form-group">
+                    <label>Rôle *</label>
+                    <select id="user-role" required>
+                        <option value="CLIENT">Client</option>
+                        <option value="PROPRIETAIRE">Propriétaire</option>
+                        <option value="ADMIN">Administrateur</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Statut</label>
+                    <select id="user-actif">
+                        <option value="true">Actif</option>
+                        <option value="false">Inactif</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeUserModal()">Annuler</button>
+            <button class="btn-save" onclick="saveUser()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allProducts = [];
+    let currentEditId = null;
+
+    // Vérifier si l'utilisateur est connecté
+    function checkAuth() {
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+
+        if (!token || !user) {
+            window.location.href = "/login";
+            return false;
+        }
+
+        if (user.role !== "ADMIN" && user.role !== "ROLE_ADMIN") {
+            window.location.href = "/";
+            return false;
+        }
+
+        document.getElementById("admin-name").textContent = user.prenom || user.nom || "Administrateur";
+        document.getElementById("admin-email").textContent = user.email;
+        return true;
+    }
+
+    // Charger tous les produits
+    async function loadProducts() {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch("/admin/produits", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "/login";
+                return;
+            }
+
+            allProducts = await response.json();
+            renderProducts();
+            updateStats();
+        } catch (error) {
+            console.error("Erreur:", error);
+            showToast("Erreur lors du chargement des produits", "error");
+        }
+    }
+
+    // Afficher les produits
+    function renderProducts() {
+        const searchTerm = document.getElementById("search-input").value.toLowerCase();
+        const filtered = allProducts.filter(p =>
+            p.nom.toLowerCase().includes(searchTerm) ||
+            (p.categorie && p.categorie.toLowerCase().includes(searchTerm))
+        );
+
+        const tbody = document.getElementById("products-table-body");
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 50px;">
+                            <i class="fas fa-box-open" style="font-size: 3rem; color: #cbd5e1;"></i>
+                            <p style="margin-top: 10px; color: #64748b;">Aucun produit trouvé</p>
+                        </td>
+                    </tr>
+                `;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(product => `
+                <tr>
+                    <td>
+                        <img src="${product.imageUrl || '/images/default-product.jpg'}"
+                             alt="${product.nom}"
+                             class="product-image"
+                             onerror="this.src='/images/default-product.jpg'">
+                    </td>
+                    <td><strong>${product.nom}</strong></td>
+                    <td>${product.categorie || '-'}</td>
+                    <td>${product.prix.toLocaleString("fr-FR")} CFA</td>
+                    <td>
+                        <span style="color: ${product.quantite < 10 ? '#ef4444' : '#10b981'}">
+                            ${product.quantite || 0}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-edit" onclick="openEditModal(${product.id})">
+                                <i class="fas fa-edit"></i> Modifier
+                            </button>
+                            <button class="btn-delete" onclick="deleteProduct(${product.id})">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join("");
+    }
+
+    // Rechercher
+    function searchProducts() {
+        renderProducts();
+    }
+
+    // Mettre à jour les statistiques
+    function updateStats() {
+        const total = allProducts.length;
+        const categories = new Set(allProducts.map(p => p.categorie).filter(c => c));
+        const totalStockValue = allProducts.reduce((sum, p) => sum + (p.prix * (p.quantite || 0)), 0);
+        const lowStock = allProducts.filter(p => (p.quantite || 0) < 10).length;
+
+        document.getElementById("total-products").textContent = total;
+        document.getElementById("total-categories").textContent = categories.size;
+        document.getElementById("stock-value").textContent = totalStockValue.toLocaleString("fr-FR");
+        document.getElementById("low-stock").textContent = lowStock;
+    }
+
+    // Ouvrir modal d'ajout
+    function openAddModal() {
+        currentEditId = null;
+        document.getElementById("modal-title").textContent = "Ajouter un produit";
+        document.getElementById("product-form").reset();
+        document.getElementById("product-id").value = "";
+        document.getElementById("product-modal").style.display = "flex";
+    }
+
+    // Ouvrir modal d'édition
+    function openEditModal(id) {
+        const product = allProducts.find(p => p.id === id);
+        if (!product) return;
+
+        currentEditId = id;
+        document.getElementById("modal-title").textContent = "Modifier le produit";
+        document.getElementById("product-id").value = product.id;
+        document.getElementById("product-nom").value = product.nom;
+        document.getElementById("product-description").value = product.description || "";
+        document.getElementById("product-prix").value = product.prix;
+        document.getElementById("product-quantite").value = product.quantite || 0;
+        document.getElementById("product-categorie").value = product.categorie || "";
+        document.getElementById("product-imageUrl").value = product.imageUrl || "";
+
+        document.getElementById("product-modal").style.display = "flex";
+    }
+
+    // Fermer modal
+    function closeModal() {
+        document.getElementById("product-modal").style.display = "none";
+        document.getElementById("product-form").reset();
+    }
+
+    // Sauvegarder produit
+    async function saveProduct() {
+        const token = localStorage.getItem("token");
+        const id = document.getElementById("product-id").value;
+        const productData = {
+            nom: document.getElementById("product-nom").value,
+            description: document.getElementById("product-description").value,
+            prix: parseFloat(document.getElementById("product-prix").value),
+            quantite: parseInt(document.getElementById("product-quantite").value),
+            categorie: document.getElementById("product-categorie").value,
+            imageUrl: document.getElementById("product-imageUrl").value
+        };
+
+        // Validation
+        if (!productData.nom) {
+            showToast("Le nom du produit est requis", "error");
+            return;
+        }
+        if (!productData.prix || productData.prix <= 0) {
+            showToast("Le prix doit être supérieur à 0", "error");
+            return;
+        }
+        if (!productData.quantite || productData.quantite < 0) {
+            showToast("La quantité doit être valide", "error");
+            return;
+        }
+
+        try {
+            let response;
+            if (id) {
+                // Modification
+                response = await fetch(`/admin/produits/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(productData)
+                });
+            } else {
+                // Création
+                response = await fetch("/admin/produits", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(productData)
+                });
+            }
+
+            if (response.ok) {
+                showToast(id ? "Produit modifié avec succès" : "Produit ajouté avec succès", "success");
+                closeModal();
+                loadProducts();
+            } else {
+                const error = await response.text();
+                showToast("Erreur: " + error, "error");
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            showToast("Erreur lors de l'enregistrement", "error");
+        }
+    }
+
+    // Supprimer produit
+    async function deleteProduct(id) {
+        if (!confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) return;
+
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch(`/admin/produits/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                showToast("Produit supprimé avec succès", "success");
+                loadProducts();
+            } else {
+                showToast("Erreur lors de la suppression", "error");
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            showToast("Erreur lors de la suppression", "error");
+        }
+    }
+
+    // Déconnexion
+    function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+    }
+
+    // Afficher notification
+    function showToast(message, type) {
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // Initialisation
+    document.addEventListener("DOMContentLoaded", function() {
+        if (checkAuth()) {
+            loadProducts();
+        }
+    });
+
+    // Fermer modal en cliquant en dehors
+    window.onclick = function(event) {
+        const modal = document.getElementById("product-modal");
+        const userModal = document.getElementById("user-modal");
+        if (event.target === modal) {
+            closeModal();
+        }
+        if (event.target === userModal) {
+            closeUserModal();
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // USER MANAGEMENT - Gestion des utilisateurs
+    // ═══════════════════════════════════════════════════════════════
+    
+    let allUsers = [];
+    
+    // Changer d'onglet
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        event.target.closest('.tab-btn').classList.add('active');
+        document.getElementById(tab + '-tab').classList.add('active');
+        
+        if (tab === 'users') {
+            loadUsers();
+        }
+    }
+
+    // Charger tous les utilisateurs
+    async function loadUsers() {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch("/admin/api/users", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "/login";
+                return;
+            }
+
+            allUsers = await response.json();
+            renderUsers();
+        } catch (error) {
+            console.error("Erreur:", error);
+            showToast("Erreur lors du chargement des utilisateurs", "error");
+        }
+    }
+
+    // Afficher les utilisateurs
+    function renderUsers() {
+        const searchTerm = document.getElementById("user-search-input").value.toLowerCase();
+        const filtered = allUsers.filter(u =>
+            (u.nom + ' ' + u.prenom).toLowerCase().includes(searchTerm) ||
+            (u.email && u.email.toLowerCase().includes(searchTerm))
+        );
+
+        const tbody = document.getElementById("users-table-body");
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 50px;">
+                            <i class="fas fa-users" style="font-size: 3rem; color: #cbd5e1;"></i>
+                            <p style="margin-top: 10px; color: #64748b;">Aucun utilisateur trouvé</p>
+                        </td>
+                    </tr>
+                `;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(user => `
+                <tr>
+                    <td><strong>${user.prenom || ''} ${user.nom || ''}</strong></td>
+                    <td>${user.email || '-'}</td>
+                    <td>${user.telephone || '-'}</td>
+                    <td>
+                        <span class="role-badge ${user.role ? user.role.toLowerCase() : 'client'}">
+                            ${user.role || 'CLIENT'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="user-status ${user.actif ? 'active' : 'inactive'}">
+                            ${user.actif ? 'Actif' : 'Inactif'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-edit" onclick="openUserEditModal(${user.id})">
+                                <i class="fas fa-edit"></i> Modifier
+                            </button>
+                            <button class="btn-delete" onclick="deleteUser(${user.id})">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join("");
+    }
+
+    // Rechercher utilisateurs
+    function searchUsers() {
+        renderUsers();
+    }
+
+    // Ouvrir modal d'ajout utilisateur
+    function openUserAddModal() {
+        document.getElementById("user-modal-title").textContent = "Ajouter un utilisateur";
+        document.getElementById("user-form").reset();
+        document.getElementById("user-id").value = "";
+        document.getElementById("user-password").required = true;
+        document.getElementById("password-required").style.display = "inline";
+        document.getElementById("user-modal").style.display = "flex";
+    }
+
+    // Ouvrir modal d'édition utilisateur
+    function openUserEditModal(id) {
+        const user = allUsers.find(u => u.id === id);
+        if (!user) return;
+
+        document.getElementById("user-modal-title").textContent = "Modifier l'utilisateur";
+        document.getElementById("user-id").value = user.id;
+        document.getElementById("user-nom").value = user.nom || "";
+        document.getElementById("user-prenom").value = user.prenom || "";
+        document.getElementById("user-email").value = user.email || "";
+        document.getElementById("user-telephone").value = user.telephone || "";
+        document.getElementById("user-role").value = user.role || "CLIENT";
+        document.getElementById("user-actif").value = user.actif ? "true" : "false";
+        
+        // Password not required for edit
+        document.getElementById("user-password").value = "";
+        document.getElementById("user-password").required = false;
+        document.getElementById("password-required").style.display = "none";
+
+        document.getElementById("user-modal").style.display = "flex";
+    }
+
+    // Fermer modal utilisateur
+    function closeUserModal() {
+        document.getElementById("user-modal").style.display = "none";
+        document.getElementById("user-form").reset();
+    }
+
+    // Sauvegarder utilisateur
+    async function saveUser() {
+        const token = localStorage.getItem("token");
+        const id = document.getElementById("user-id").value;
+        const password = document.getElementById("user-password").value;
+        
+        const userData = {
+            nom: document.getElementById("user-nom").value,
+            prenom: document.getElementById("user-prenom").value,
+            email: document.getElementById("user-email").value,
+            telephone: document.getElementById("user-telephone").value,
+            role: document.getElementById("user-role").value,
+            actif: document.getElementById("user-actif").value === "true"
+        };
+
+        // Validation
+        if (!userData.nom) {
+            showToast("Le nom est requis", "error");
+            return;
+        }
+        if (!userData.prenom) {
+            showToast("Le prénom est requis", "error");
+            return;
+        }
+        if (!userData.email) {
+            showToast("L'email est requis", "error");
+            return;
+        }
+        if (!id && !password) {
+            showToast("Le mot de passe est requis pour un nouvel utilisateur", "error");
+            return;
+        }
+
+        if (password) {
+            userData.password = password;
+        }
+
+        try {
+            let response;
+            if (id) {
+                // Modification
+                response = await fetch(`/admin/api/users/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(userData)
+                });
+            } else {
+                // Création
+                response = await fetch("/admin/api/users", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(userData)
+                });
+            }
+
+            if (response.ok) {
+                showToast(id ? "Utilisateur modifié avec succès" : "Utilisateur ajouté avec succès", "success");
+                closeUserModal();
+                loadUsers();
+            } else {
+                const error = await response.json();
+                showToast("Erreur: " + (error.error || "Erreur inconnue"), "error");
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            showToast("Erreur lors de l'enregistrement", "error");
+        }
+    }
+
+    // Supprimer utilisateur
+    async function deleteUser(id) {
+        if (!confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) return;
+
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await fetch(`/admin/api/users/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                showToast("Utilisateur supprimé avec succès", "success");
+                loadUsers();
+            } else {
+                const error = await response.json();
+                showToast("Erreur: " + (error.error || "Erreur lors de la suppression"), "error");
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            showToast("Erreur lors de la suppression", "error");
+        }
+    }
+</script>
+</body>
+</html>

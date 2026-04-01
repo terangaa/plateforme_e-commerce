@@ -11,14 +11,14 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemDTO {
+public class PanierDTO {
     private Long produitId;
     private String nom;
     private BigDecimal prix;
     private String imageUrl;
     private Integer quantite;
     
-    public CartItemDTO(Long produitId, String nom, BigDecimal prix, String imageUrl) {
+    public PanierDTO(Long produitId, String nom, BigDecimal prix, String imageUrl) {
         this.produitId = produitId;
         this.nom = nom;
         this.prix = prix;

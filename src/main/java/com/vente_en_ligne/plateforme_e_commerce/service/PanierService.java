@@ -1,7 +1,9 @@
 package com.vente_en_ligne.plateforme_e_commerce.service;
 
-import com.vente_en_ligne.plateforme_e_commerce.dto.CartItemDTO;
+import com.vente_en_ligne.plateforme_e_commerce.dto.PanierDTO;
+import com.vente_en_ligne.plateforme_e_commerce.entity.Panier;
 import com.vente_en_ligne.plateforme_e_commerce.entity.Produit;
+import com.vente_en_ligne.plateforme_e_commerce.repository.PanierRepository;
 import com.vente_en_ligne.plateforme_e_commerce.repository.ProduitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,16 +22,18 @@ import java.util.Optional;
 @Service
 @SessionScope
 @RequiredArgsConstructor
-public class CartService {
+public class PanierService {
 
     private final ProduitRepository produitRepository;
-    private final List<CartItemDTO> cartItems = new ArrayList<>();
+    private final List<PanierDTO> cartItems = new ArrayList<>();
+    private final PanierRepository panierRepository;
+
 
     /**
      * Ajouter un produit au panier
      */
     @Transactional
-    public CartItemDTO addToCart(Long produitId, Integer quantite) {
+    public PanierDTO addToCart(Long produitId, Integer quantite) {
         if (quantite == null || quantite <= 0) {
             quantite = 1;
         }
@@ -47,13 +52,13 @@ public class CartService {
         }
 
         // Vérifier si le produit est déjà dans le panier
-        Optional<CartItemDTO> existingItem = cartItems.stream()
+        Optional<PanierDTO> existingItem = cartItems.stream()
                 .filter(item -> item.getProduitId().equals(produitId))
                 .findFirst();
 
         if (existingItem.isPresent()) {
             // Mettre à jour la quantité
-            CartItemDTO item = existingItem.get();
+            PanierDTO item = existingItem.get();
             int nouvelleQuantite = item.getQuantite() + quantite;
 
             if (produit.getStock() != null && produit.getStock() < nouvelleQuantite) {
@@ -64,7 +69,7 @@ public class CartService {
             return item;
         } else {
             // Ajouter un nouveau produit
-            CartItemDTO newItem = new CartItemDTO(
+            PanierDTO newItem = new PanierDTO(
                     produit.getId(),
                     produit.getNom(),
                     produit.getPrix(),
@@ -80,7 +85,7 @@ public class CartService {
      * Modifier la quantité d'un produit dans le panier
      */
     @Transactional
-    public CartItemDTO updateQuantity(Long produitId, Integer quantite) {
+    public PanierDTO updateQuantity(Long produitId, Integer quantite) {
         if (quantite == null || quantite <= 0) {
             return removeFromCart(produitId);
         }
@@ -94,7 +99,7 @@ public class CartService {
             }
         }
 
-        Optional<CartItemDTO> itemOpt = cartItems.stream()
+        Optional<PanierDTO> itemOpt = cartItems.stream()
                 .filter(item -> item.getProduitId().equals(produitId))
                 .findFirst();
 
@@ -102,7 +107,7 @@ public class CartService {
             throw new IllegalArgumentException("Produit non trouvé dans le panier");
         }
 
-        CartItemDTO item = itemOpt.get();
+        PanierDTO item = itemOpt.get();
         item.setQuantite(quantite);
         return item;
     }
@@ -111,8 +116,8 @@ public class CartService {
      * Supprimer un produit du panier
      */
     @Transactional
-    public CartItemDTO removeFromCart(Long produitId) {
-        Optional<CartItemDTO> itemOpt = cartItems.stream()
+    public PanierDTO removeFromCart(Long produitId) {
+        Optional<PanierDTO> itemOpt = cartItems.stream()
                 .filter(item -> item.getProduitId().equals(produitId))
                 .findFirst();
 
@@ -120,7 +125,7 @@ public class CartService {
             throw new IllegalArgumentException("Produit non trouvé dans le panier");
         }
 
-        CartItemDTO removedItem = itemOpt.get();
+        PanierDTO removedItem = itemOpt.get();
         cartItems.remove(removedItem);
         return removedItem;
     }
@@ -128,7 +133,7 @@ public class CartService {
     /**
      * Obtenir tous les éléments du panier
      */
-    public List<CartItemDTO> getCartItems() {
+    public List<PanierDTO> getCartItems() {
         return new ArrayList<>(cartItems);
     }
 
@@ -137,7 +142,7 @@ public class CartService {
      */
     public int getItemCount() {
         return cartItems.stream()
-                .mapToInt(CartItemDTO::getQuantite)
+                .mapToInt(PanierDTO::getQuantite)
                 .sum();
     }
 
@@ -162,5 +167,16 @@ public class CartService {
      */
     public boolean isEmpty() {
         return cartItems.isEmpty();
+    }
+
+    public Collection<Panier> getAllPaniers() {
+        return panierRepository.findAll();
+    }
+    
+    /**
+     * Supprimer un panier par ID
+     */
+    public void deletePanier(Long id) {
+        panierRepository.deleteById(id);
     }
 }

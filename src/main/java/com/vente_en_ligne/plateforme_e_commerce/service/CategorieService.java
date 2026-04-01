@@ -33,7 +33,7 @@ public class CategorieService {
     
     @Transactional
     public CategorieDTO creerCategorie(CategorieDTO categorieDTO) {
-        if (categorieRepository.existsByName(categorieDTO.getNom())) {
+        if (categorieRepository.existsByNom(categorieDTO.getNom())) {
             throw new RuntimeException("Une catégorie avec ce nom existe déjà");
         }
         Categorie categorie = versEntite(categorieDTO);
@@ -46,7 +46,7 @@ public class CategorieService {
         Categorie categorie = categorieRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Catégorie non trouvée avec l'ID: " + id));
         
-        categorie.setName(categorieDTO.getNom());
+        categorie.setNom(categorieDTO.getNom());
         categorie.setDescription(categorieDTO.getDescription());
         
         categorie = categorieRepository.save(categorie);
@@ -64,14 +64,14 @@ public class CategorieService {
     private CategorieDTO versDTO(Categorie categorie) {
         CategorieDTO dto = new CategorieDTO();
         dto.setId(categorie.getId());
-        dto.setNom(categorie.getName());
+        dto.setNom(categorie.getNom());
         dto.setDescription(categorie.getDescription());
         return dto;
     }
     
     private Categorie versEntite(CategorieDTO dto) {
         Categorie categorie = new Categorie();
-        categorie.setName(dto.getNom());
+        categorie.setNom(dto.getNom());
         categorie.setDescription(dto.getDescription());
         return categorie;
     }
@@ -87,5 +87,10 @@ public class CategorieService {
     public Categorie findById(Long categorieId) {
         return categorieRepository.findById(categorieId)
                 .orElseThrow(() -> new RuntimeException("Catégorie introuvable avec l'ID " + categorieId));
+    }
+
+    public Categorie getCategorieById(Long id) {
+        return categorieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Catégorie introuvable avec l'ID : " + id));
     }
 }

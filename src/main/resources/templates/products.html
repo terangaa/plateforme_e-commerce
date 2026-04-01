@@ -445,7 +445,7 @@
 
         <div class="nav-links">
           <a href="/">Accueil</a>
-          <a href="/products" class="active">Produits</a>
+          <a href="/admin/produits" class="active">Produits</a>
           <a href="/categories">Catégories</a>
           <a href="/contact">Contact</a>
         </div>
@@ -591,7 +591,7 @@
               </span>
               <div style="display: flex; gap: 12px; align-items: center">
                 <a
-                  href="/produits/nouveau"
+                  href="/admin/produits"
                   class="btn-add-product"
                   style="
                     display: inline-flex;
@@ -639,7 +639,7 @@
       // Load products
       async function loadProducts() {
         try {
-          const response = await fetch("/api/produits");
+          const response = await fetch("/admin/produits");
           allProducts = await response.json();
           renderProducts();
         } catch (error) {

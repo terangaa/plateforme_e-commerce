@@ -45,7 +45,7 @@ public class User {
     private Role role = Role.CLIENT;
 
     @Column(nullable = false)
-    private boolean actif = true;
+    private Boolean actif = true;
 
     @Column(name = "date_creation")
     private LocalDateTime dateCreation = LocalDateTime.now();
@@ -53,13 +53,12 @@ public class User {
     @Column(name = "date_modification")
     private LocalDateTime dateModification = LocalDateTime.now();
 
-    public enum Role {
-        CLIENT,
-        ADMIN,
-        MANAGER
+    public Boolean getActif() {
+        return actif;
     }
 
     public String getNomComplet() {
         return prenom + " " + nom;
     }
+
 }

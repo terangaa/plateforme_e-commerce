@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détail Produit</title>
+</head>
+<body>
+<h2 th:text="${produit.nom}">Nom du produit</h2>
+<img th:src="@{${produit.imageUrl}}" alt="Image produit" width="200"/>
+<p><strong>Description :</strong> <span th:text="${produit.description}">Description</span></p>
+<p><strong>Prix :</strong> <span th:text="${produit.prix}">0.00</span> CFA</p>
+<p><strong>Stock :</strong> <span th:text="${produit.stock}">0</span></p>
+<p><strong>Quantité :</strong> <span th:text="${produit.quantite}">0</span></p>
+<p><strong>Catégorie :</strong> <span th:text="${produit.categorie.nom}">Catégorie</span></p>
+<p><strong>Propriétaire :</strong> <span th:text="${produit.proprietaire.nom} + ' ' + ${produit.proprietaire.prenom}">Utilisateur</span></p>
+
+<a th:href="@{/admin/produits}">Retour à la liste</a>
+</body>
+</html>

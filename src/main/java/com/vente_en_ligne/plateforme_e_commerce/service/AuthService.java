@@ -1,10 +1,13 @@
 package com.vente_en_ligne.plateforme_e_commerce.service;
 
 import com.vente_en_ligne.plateforme_e_commerce.dto.RegisterRequest;
+import com.vente_en_ligne.plateforme_e_commerce.entity.Role;
 import com.vente_en_ligne.plateforme_e_commerce.entity.User;
 import com.vente_en_ligne.plateforme_e_commerce.repository.UserRepository;
+import com.vente_en_ligne.plateforme_e_commerce.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,22 +24,13 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     /**
      * Inscription d'un nouvel utilisateur
      */
     @Transactional
     public Map<String, Object> register(RegisterRequest request) {
-        Map<String, Object> response = new HashMap<>();
-
-        // Vérifier si l'email existe déjà
-        if (userRepository.existsByEmail(request.getEmail())) {
-            response.put("success", false);
-            response.put("message", "Un compte avec cet email existe déjà");
-            return response;
-        }
-
-        // Créer le nouvel utilisateur
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -47,22 +41,25 @@ public class AuthService {
         user.setVille(request.getVille());
         user.setCodePostal(request.getCodePostal());
         user.setPays(request.getPays());
-        user.setRole(User.Role.CLIENT);
-        user.setActif(true);
-        user.setDateCreation(LocalDateTime.now());
-        user.setDateModification(LocalDateTime.now());
 
+        // 🔹 Assigner le rôle envoyé ou par défaut
+        if (request.getRole() != null) {
+            user.setRole(request.getRole());
+        } else {
+            user.setRole(Role.CLIENT); // rôle par défaut
+        }
+
+        user.setActif(true);
         userRepository.save(user);
 
-        log.info("Nouvel utilisateur enregistré: {}", user.getEmail());
+        String jwt = jwtService.generateToken(user.getEmail());
 
-        response.put("success", true);
-        response.put("message", "Compte créé avec succès");
-        response.put("user", user);
-
-        return response;
+        return Map.of(
+                "success", true,
+                "token", jwt,
+                "role", user.getRole().name()
+        );
     }
-
     /**
      * Connexion d'un utilisateur
      */
@@ -79,7 +76,7 @@ public class AuthService {
 
         User user = userOpt.get();
 
-        if (!user.isActif()) {
+        if (!user.getActif()) {
             response.put("success", false);
             response.put("message", "Compte désactivé");
             return response;
@@ -209,5 +206,31 @@ public class AuthService {
         response.put("message", "Mot de passe changé avec succès");
 
         return response;
+    }
+
+    public User authenticate(String email, String password) {
+        // 1️⃣ Récupérer l'utilisateur par email
+        User user = userRepository.findByEmail(email)
+                .orElse(null); // renvoie null si pas trouvé
+
+        if (user == null) {
+            return null; // utilisateur inexistant
+        }
+
+        // 2️⃣ Vérifier que l'utilisateur est actif
+        if (!user.getActif()) {
+            return null; // utilisateur désactivé
+        }
+
+        // 3️⃣ Vérifier le mot de passe avec BCrypt
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        boolean matches = passwordEncoder.matches(password, user.getPassword());
+
+        if (!matches) {
+            return null; // mot de passe incorrect
+        }
+
+        // 4️⃣ Tout est correct → renvoyer l'utilisateur
+        return user;
     }
 }

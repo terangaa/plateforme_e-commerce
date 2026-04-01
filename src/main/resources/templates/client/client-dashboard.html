@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Compte - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .user-layout {
+            display: flex;
+            min-height: 100vh;
+            background: var(--light-secondary);
+        }
+        
+        /* Sidebar */
+        .user-sidebar {
+            width: 280px;
+            background: var(--white);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+            z-index: 100;
+        }
+        
+        .user-sidebar-header {
+            padding: 30px 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+        }
+        
+        .user-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .user-sidebar-header h3 {
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+        
+        .user-sidebar-header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+        
+        .user-nav {
+            padding: 24px 16px;
+        }
+        
+        .user-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            color: var(--gray-600);
+            border-radius: var(--radius);
+            transition: var(--transition);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        
+        .user-nav a:hover {
+            background: var(--light-secondary);
+            color: var(--primary);
+        }
+        
+        .user-nav a.active {
+            background: var(--primary-50);
+            color: var(--primary);
+        }
+        
+        .user-nav a i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: var(--gray-200);
+            margin: 16px 0;
+        }
+        
+        /* Main Content */
+        .user-main {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            background: var(--white);
+            padding: 24px 30px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .user-header h1 {
+            font-size: 1.75rem;
+        }
+        
+        .user-header p {
+            color: var(--gray-500);
+        }
+        
+        .welcome-badge {
+            background: var(--primary-50);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Stats Cards */
+        .user-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.orders { background: var(--info-bg); color: var(--info); }
+        .stat-icon.cart { background: var(--warning-bg); color: var(--warning); }
+        .stat-icon.wishlist { background: var(--danger-bg); color: var(--danger); }
+        .stat-icon.reviews { background: var(--success-bg); color: var(--success); }
+        
+        .stat-info h3 {
+            font-size: 1.75rem;
+            margin-bottom: 4px;
+        }
+        
+        .stat-info p {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+        
+        /* Content Grid */
+        .user-content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        /* Recent Orders */
+        .orders-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 24px 30px;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h3 {
+            font-size: 1.1rem;
+        }
+        
+        .orders-list {
+            padding: 0;
+        }
+        
+        .order-item {
+            display: flex;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--gray-100);
+            gap: 20px;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .order-icon.pending { background: var(--warning-bg); color: var(--warning); }
+        .order-icon.shipped { background: var(--info-bg); color: var(--info); }
+        .order-icon.delivered { background: var(--success-bg); color: var(--success); }
+        
+        .order-details {
+            flex: 1;
+        }
+        
+        .order-details h4 {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        
+        .order-details p {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        
+        .order-price {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .order-status {
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .order-status.pending { background: var(--warning-bg); color: var(--warning); }
+        .order-status.shipped { background: var(--info-bg); color: var(--info); }
+        .order-status.delivered { background: var(--success-bg); color: var(--success); }
+        
+        /* Quick Links */
+        .quick-links-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+        }
+        
+        .quick-links-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .quick-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+        
+        .quick-link:hover {
+            background: var(--light-secondary);
+            color: var(--primary);
+        }
+        
+        .quick-link i {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            background: var(--light-secondary);
+            color: var(--gray-600);
+        }
+        
+        .quick-link:hover i {
+            background: var(--primary-50);
+            color: var(--primary);
+        }
+        
+        /* Recommendations */
+        .recommendations-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+            margin-top: 30px;
+        }
+        
+        .recommendations-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .product-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .product-mini {
+            padding: 16px;
+            border: 1px solid var(--gray-100);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        
+        .product-mini:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .product-mini img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+        }
+        
+        .product-mini h4 {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .product-mini .price {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 1200px) {
+            .user-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .user-content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .user-sidebar {
+                transform: translateX(-100%);
+                transition: var(--transition);
+            }
+            
+            .user-sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .user-main {
+                margin-left: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .user-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="user-layout">
+        <!-- Sidebar -->
+        <aside class="user-sidebar" id="user-sidebar">
+            <div class="user-sidebar-header">
+                <div class="user-avatar-large" th:text="${#strings.substring(username, 0, 1).toUpperCase()}">J</div>
+                <h3 th:text="${username}">Jean Dupont</h3>
+                <p>Client Premium</p>
+            </div>
+            
+            <nav class="user-nav">
+                <a href="/client/dashboard" class="active">
+                    <i class="fas fa-home"></i>
+                    Tableau de bord
+                </a>
+                <a href="/client/orders">
+                    <i class="fas fa-shopping-bag"></i>
+                    Mes Commandes
+                </a>
+                <a href="/cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    Mon Panier
+                </a>
+                <a href="/client/wishlist">
+                    <i class="fas fa-heart"></i>
+                    Ma Wishlist
+                </a>
+                
+                <div class="nav-divider"></div>
+                
+                <a href="/client/profile">
+                    <i class="fas fa-user"></i>
+                    Mon Profil
+                </a>
+                <a href="/client/addresses">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Adresses
+                </a>
+                <a href="/client/payment">
+                    <i class="fas fa-credit-card"></i>
+                    Moyens de Paiement
+                </a>
+                
+                <div class="nav-divider"></div>
+                
+                <a href="/client/settings">
+                    <i class="fas fa-cog"></i>
+                    Paramètres
+                </a>
+                <a href="/logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="user-main">
+            <div class="user-header">
+                <div>
+                    <h1>Bienvenue, <span th:text="${username}">Jean</span>!</h1>
+                    <p>Voici un aperçu de votre activité récente</p>
+                </div>
+                <span class="welcome-badge">
+                    <i class="fas fa-star"></i> Client Premium
+                </span>
+            </div>
+            
+            <!-- Stats -->
+            <div class="user-stats">
+                <div class="stat-card">
+                    <div class="stat-icon orders">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>12</h3>
+                        <p>Commandes</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon cart">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>3</h3>
+                        <p>Dans le Panier</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon wishlist">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>8</h3>
+                        <p>Favoris</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon reviews">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>5</h3>
+                        <p>Avis</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Grid -->
+            <div class="user-content-grid">
+                <!-- Recent Orders -->
+                <div class="orders-card">
+                    <div class="card-header">
+                        <h3>Commandes Récentes</h3>
+                        <a href="/client/orders" class="btn btn-outline btn-sm">Voir Tout</a>
+                    </div>
+                    
+                    <div class="orders-list">
+                        <div class="order-item">
+                            <div class="order-icon delivered">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="order-details">
+                                <h4>Commande #ORD-2024-0125</h4>
+                                <p>Livré le 15 Mars 2024</p>
+                            </div>
+                            <div class="order-price">85,000 CFA</div>
+                            <span class="order-status delivered">Livré</span>
+                        </div>
+                        
+                        <div class="order-item">
+                            <div class="order-icon shipped">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="order-details">
+                                <h4>Commande #ORD-2024-0128</h4>
+                                <p>En cours de livraison</p>
+                            </div>
+                            <div class="order-price">45,000 CFA</div>
+                            <span class="order-status shipped">Expédié</span>
+                        </div>
+                        
+                        <div class="order-item">
+                            <div class="order-icon pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="order-details">
+                                <h4>Commande #ORD-2024-0130</h4>
+                                <p>En attente de confirmation</p>
+                            </div>
+                            <div class="order-price">120,000 CFA</div>
+                            <span class="order-status pending">En attente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <div class="quick-links-card">
+                        <h3>Actions Rapides</h3>
+                        
+                        <a href="/products" class="quick-link">
+                            <i class="fas fa-search"></i>
+                            <span>Continuer mes achats</span>
+                        </a>
+                        
+                        <a href="/cart" class="quick-link">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Voir mon panier</span>
+                        </a>
+                        
+                        <a href="/client/wishlist" class="quick-link">
+                            <i class="fas fa-heart"></i>
+                            <span>Ma wishlist</span>
+                        </a>
+                        
+                        <a href="/client/profile" class="quick-link">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Modifier mon profil</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Recommendations -->
+                    <div class="recommendations-card">
+                        <h3>Recommandés pour vous</h3>
+                        
+                        <div class="product-mini-grid">
+                            <div class="product-mini">
+                                <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300" alt="Product">
+                                <h4>Valise Premium</h4>
+                                <div class="price">45,000 CFA</div>
+                            </div>
+                            <div class="product-mini">
+                                <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300" alt="Product">
+                                <h4>Sac de Voyage</h4>
+                                <div class="price">35,000 CFA</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('user-sidebar');
+            sidebar.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

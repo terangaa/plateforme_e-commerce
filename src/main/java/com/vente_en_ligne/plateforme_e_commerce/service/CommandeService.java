@@ -102,4 +102,35 @@ public class CommandeService {
         return commandeRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée avec l'id : " + orderId));
     }
+
+    public Collection<Commande> getAllCommandes() {
+        return commandeRepository.findAll();
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Commande commande = commandeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée avec l'id : " + id));
+
+        // Dissocier ou supprimer les éléments de commande pour éviter les problèmes de clé étrangère
+        if (commande.getElements() != null) {
+            commande.getElements().forEach(el -> el.setCommande(null));
+            commande.getElements().clear();
+        }
+
+        // Supprimer la commande
+        commandeRepository.delete(commande);
+    }
+
+    public void save(Commande commande) {
+        commandeRepository.save(commande);
+    }
+
+    public void updateStatut(Long id, String statut) {
+        Commande commande = commandeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Commande introuvable"));
+
+        commande.setStatut(statut); // ou Enum.valueOf si enum
+        commandeRepository.save(commande);
+    }
 }

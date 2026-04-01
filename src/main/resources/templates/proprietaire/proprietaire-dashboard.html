@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Vendeur - ShopLine</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .owner-layout {
+            display: flex;
+            min-height: 100vh;
+            background: var(--light-secondary);
+        }
+        
+        /* Sidebar */
+        .owner-sidebar {
+            width: 280px;
+            background: var(--dark);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .owner-sidebar-header {
+            padding: 30px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .owner-sidebar-header .logo {
+            color: var(--white);
+        }
+        
+        .owner-nav {
+            padding: 24px 16px;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-500);
+            padding: 0 12px;
+            margin-bottom: 12px;
+        }
+        
+        .owner-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            color: var(--gray-400);
+            border-radius: var(--radius);
+            transition: var(--transition);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        
+        .owner-nav a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--white);
+        }
+        
+        .owner-nav a.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .owner-nav a i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        /* Main Content */
+        .owner-main {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .owner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            background: var(--white);
+            padding: 24px 30px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .owner-header h1 {
+            font-size: 1.75rem;
+        }
+        
+        .owner-header p {
+            color: var(--gray-500);
+        }
+        
+        .owner-badge {
+            background: var(--info-bg);
+            color: var(--info);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Stats Cards */
+        .owner-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.products { background: var(--primary-100); color: var(--primary); }
+        .stat-icon.sales { background: var(--success-bg); color: var(--success); }
+        .stat-icon.revenue { background: var(--info-bg); color: var(--info); }
+        .stat-icon.customers { background: var(--warning-bg); color: var(--warning); }
+        
+        .stat-info h3 {
+            font-size: 1.75rem;
+            margin-bottom: 4px;
+        }
+        
+        .stat-info p {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+        
+        .stat-trend {
+            margin-left: auto;
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .stat-trend.up { background: var(--success-bg); color: var(--success); }
+        .stat-trend.down { background: var(--danger-bg); color: var(--danger); }
+        
+        /* Content Grid */
+        .owner-content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        /* Products Table */
+        .products-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 24px 30px;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h3 {
+            font-size: 1.1rem;
+        }
+        
+        .custom-table {
+            width: 100%;
+        }
+        
+        .custom-table th {
+            background: var(--light-secondary);
+            padding: 16px 24px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-600);
+        }
+        
+        .custom-table td {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-700);
+        }
+        
+        .custom-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .custom-table tr:hover td {
+            background: var(--light-secondary);
+        }
+        
+        .product-cell {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .product-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius);
+            object-fit: cover;
+            background: var(--light-secondary);
+        }
+        
+        .product-cell-info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        
+        .product-cell-info p {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.active {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        
+        .status-badge.low {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn.edit {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+        
+        .action-btn.delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Quick Actions */
+        .quick-actions-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+        }
+        
+        .quick-actions-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .quick-action-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+        
+        .quick-action-item:hover {
+            background: var(--light-secondary);
+        }
+        
+        .quick-action-item i {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        
+        .quick-action-item.add i {
+            background: var(--primary-100);
+            color: var(--primary);
+        }
+        
+        .quick-action-item.orders i {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+        
+        .quick-action-item.analytics i {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        
+        .quick-action-item h4 {
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+        
+        .quick-action-item p {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        
+        /* Sales Chart Placeholder */
+        .chart-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+            margin-top: 30px;
+        }
+        
+        .chart-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: var(--light-secondary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-400);
+        }
+        
+        @media (max-width: 1200px) {
+            .owner-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .owner-content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .owner-sidebar {
+                transform: translateX(-100%);
+                transition: var(--transition);
+            }
+            
+            .owner-sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .owner-main {
+                margin-left: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .owner-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .owner-header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="owner-layout">
+        <!-- Sidebar -->
+        <aside class="owner-sidebar" id="owner-sidebar">
+            <div class="owner-sidebar-header">
+                <a href="/" class="logo">Shop<span>Line</span></a>
+            </div>
+            
+            <nav class="owner-nav">
+                <div class="nav-section-title">Principal</div>
+                <a href="/proprietaire/dashboard" class="active">
+                    <i class="fas fa-chart-pie"></i>
+                    Dashboard
+                </a>
+                <a href="/proprietaire/produits">
+                    <i class="fas fa-box"></i>
+                    Mes Produits
+                </a>
+                <a href="/proprietaire/commandes">
+                    <i class="fas fa-shopping-bag"></i>
+                    Commandes
+                </a>
+                
+                <div class="nav-section-title">Gestion</div>
+                <a href="/proprietaire/produits/ajouter">
+                    <i class="fas fa-plus-circle"></i>
+                    Ajouter Produit
+                </a>
+                <a href="/proprietaire/inventaires">
+                    <i class="fas fa-warehouse"></i>
+                    Inventaire
+                </a>
+                
+                <div class="nav-section-title">Finances</div>
+                <a href="/proprietaire/ventes">
+                    <i class="fas fa-chart-line"></i>
+                    Ventes
+                </a>
+                <a href="/proprietaire/paiements">
+                    <i class="fas fa-wallet"></i>
+                    Paiements
+                </a>
+                
+                <div class="nav-section-title">Support</div>
+                <a href="/proprietaire/clients">
+                    <i class="fas fa-users"></i>
+                    Clients
+                </a>
+                <a href="/proprietaire/messages">
+                    <i class="fas fa-envelope"></i>
+                    Messages
+                </a>
+                
+                <div class="nav-section-title">Paramètres</div>
+                <a href="/proprietaire/boutique">
+                    <i class="fas fa-store"></i>
+                    Ma Boutique
+                </a>
+                <a href="/proprietaire/settings">
+                    <i class="fas fa-cog"></i>
+                    Paramètres
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="owner-main">
+            <div class="owner-header">
+                <div>
+                    <h1>Bienvenue, <span th:text="${username}">Vendeur</span>!</h1>
+                    <p>Voici un aperçu de votre activité de vente</p>
+                </div>
+                <span class="owner-badge">
+                    <i class="fas fa-store"></i> Vendeur Boutiques
+                </span>
+            </div>
+            
+            <!-- Stats -->
+            <div class="owner-stats">
+                <div class="stat-card">
+                    <div class="stat-icon products">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>48</h3>
+                        <p>Mes Produits</p>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i> 8%
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon sales">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>156</h3>
+                        <p>Ventes</p>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i> 24%
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon revenue">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>2.5M</h3>
+                        <p>Revenus (CFA)</p>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i> 18%
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon customers">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>89</h3>
+                        <p>Clients</p>
+                    </div>
+                    <div class="stat-trend down">
+                        <i class="fas fa-arrow-down"></i> 3%
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Grid -->
+            <div class="owner-content-grid">
+                <!-- Products Table -->
+                <div class="products-card">
+                    <div class="card-header">
+                        <h3>Mes Produits Récents</h3>
+                        <a href="/proprietaire/produits" class="btn btn-outline btn-sm">Voir Tout</a>
+                    </div>
+                    
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix</th>
+                                <th>Stock</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=100" alt="Product" class="product-thumb">
+                                        <div class="product-cell-info">
+                                            <h4>Valise Premium</h4>
+                                            <p>Valises</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>45,000 CFA</td>
+                                <td>25</td>
+                                <td><span class="status-badge active">Actif</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=100" alt="Product" class="product-thumb">
+                                        <div class="product-cell-info">
+                                            <h4>Sac de Voyage</h4>
+                                            <p>Sacs</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>35,000 CFA</td>
+                                <td>12</td>
+                                <td><span class="status-badge active">Actif</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=100" alt="Product" class="product-thumb">
+                                        <div class="product-cell-info">
+                                            <h4>Valise Rose</h4>
+                                            <p>Valises</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>55,000 CFA</td>
+                                <td>3</td>
+                                <td><span class="status-badge low">Stock Faible</span></td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div>
+                    <div class="quick-actions-card">
+                        <h3>Actions Rapides</h3>
+                        
+                        <a href="/proprietaire/produits/ajouter" class="quick-action-item add">
+                            <i class="fas fa-plus"></i>
+                            <div>
+                                <h4>Ajouter Produit</h4>
+                                <p>Créer un nouveau produit</p>
+                            </div>
+                        </a>
+                        
+                        <a href="/proprietaire/commandes" class="quick-action-item orders">
+                            <i class="fas fa-shopping-bag"></i>
+                            <div>
+                                <h4>Commandes</h4>
+                                <p>Gérer les commandes</p>
+                            </div>
+                        </a>
+                        
+                        <a href="/proprietaire/ventes" class="quick-action-item analytics">
+                            <i class="fas fa-chart-bar"></i>
+                            <div>
+                                <h4>Analyses</h4>
+                                <p>Voir les statistiques</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chart -->
+            <div class="chart-card">
+                <h3>Évolution des Ventes</h3>
+                <div class="chart-placeholder">
+                    <i class="fas fa-chart-line" style="font-size: 3rem; margin-right: 16px;"></i>
+                    <span>Graphique des ventes (À intégrer)</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('owner-sidebar');
+            sidebar.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
